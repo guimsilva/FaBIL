@@ -30,6 +30,7 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FrmMain));
             gpbClassesDetails = new GroupBox();
+            label3 = new Label();
             txtPathSource = new TextBox();
             btnFolderSource = new Button();
             lbSource = new Label();
@@ -40,7 +41,6 @@
             txtRightArrowClass = new TextBox();
             txtLeftArrowClass = new TextBox();
             foderDestination = new FolderBrowserDialog();
-            label3 = new Label();
             gpbClassesDetails.SuspendLayout();
             SuspendLayout();
             // 
@@ -58,10 +58,18 @@
             gpbClassesDetails.Controls.Add(txtLeftArrowClass);
             gpbClassesDetails.Location = new Point(12, 12);
             gpbClassesDetails.Name = "gpbClassesDetails";
-            gpbClassesDetails.Size = new Size(439, 331);
+            gpbClassesDetails.Size = new Size(439, 357);
             gpbClassesDetails.TabIndex = 0;
             gpbClassesDetails.TabStop = false;
             gpbClassesDetails.Text = "Classes Details";
+            // 
+            // label3
+            // 
+            label3.Location = new Point(6, 229);
+            label3.Name = "label3";
+            label3.Size = new Size(427, 118);
+            label3.TabIndex = 14;
+            label3.Text = resources.GetString("label3.Text");
             // 
             // txtPathSource
             // 
@@ -92,18 +100,20 @@
             // label2
             // 
             label2.AutoSize = true;
+            label2.Font = new Font("Segoe UI", 8F);
             label2.Location = new Point(179, 115);
             label2.Name = "label2";
-            label2.Size = new Size(138, 15);
+            label2.Size = new Size(132, 13);
             label2.TabIndex = 5;
             label2.Text = "(Spaces will be removed)";
             // 
             // label1
             // 
             label1.AutoSize = true;
+            label1.Font = new Font("Segoe UI", 8F);
             label1.Location = new Point(179, 60);
             label1.Name = "label1";
-            label1.Size = new Size(138, 15);
+            label1.Size = new Size(132, 13);
             label1.TabIndex = 4;
             label1.Text = "(Spaces will be removed)";
             // 
@@ -141,21 +151,14 @@
             txtLeftArrowClass.TabIndex = 1;
             txtLeftArrowClass.Text = "Negative";
             // 
-            // label3
-            // 
-            label3.Location = new Point(6, 229);
-            label3.Name = "label3";
-            label3.Size = new Size(427, 87);
-            label3.TabIndex = 14;
-            label3.Text = resources.GetString("label3.Text");
-            // 
             // FrmMain
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(1117, 596);
+            ClientSize = new Size(1063, 516);
             Controls.Add(gpbClassesDetails);
             Name = "FrmMain";
+            StartPosition = FormStartPosition.CenterScreen;
             Text = "Fast Image Classifier";
             gpbClassesDetails.ResumeLayout(false);
             gpbClassesDetails.PerformLayout();
