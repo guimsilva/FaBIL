@@ -18,12 +18,22 @@ namespace FastImageClassifier
         private bool canWriteConfig = false;
         private bool isClassifying = false;
 
+        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+        {
+            if (KeyPressHandler(keyData))
+            {
+                return true;
+            }
+            return base.ProcessCmdKey(ref msg, keyData);
+        }
+
         private void FrmMain_Load(object? sender, EventArgs e)
         {
             if (File.Exists(configPath))
             {
                 Config = JsonSerializer.Deserialize<Config>(File.ReadAllText("Config.json"))!;
-            } else
+            }
+            else
             {
                 File.WriteAllText(configPath, JsonSerializer.Serialize(Config));
             }
@@ -42,21 +52,21 @@ namespace FastImageClassifier
             lvSource.Columns.Add("Name", 220);
             lvSource.Columns.Add("Size", 80);
             lvSource.Columns.Add("Date Modified", 135);
-            LoadSourceFilesList(Config.SourceFolder, loadImage: false);
+            LoadSourceFilesList(loadImage: false);
 
             lvLeftArrowKey.View = View.Details;
             lvLeftArrowKey.FullRowSelect = true;
             lvLeftArrowKey.GridLines = true;
             lvLeftArrowKey.Columns.Add("Name", 200);
             lvLeftArrowKey.Columns.Add("Date Modified", 93);
-            LoadClassifiedFilesList(txtLeftArrowClass.Text, lvLeftArrowKey);
+            LoadClassifiedFilesList(Path.Combine(Config.SourceFolder, "Results", txtLeftArrowClass.Text), lvLeftArrowKey);
 
             lvRightArrowKey.View = View.Details;
             lvRightArrowKey.FullRowSelect = true;
             lvRightArrowKey.GridLines = true;
             lvRightArrowKey.Columns.Add("Name", 200);
             lvRightArrowKey.Columns.Add("Date Modified", 93);
-            LoadClassifiedFilesList(txtRightArrowClass.Text, lvRightArrowKey);
+            LoadClassifiedFilesList(Path.Combine(Config.SourceFolder, "Results", txtRightArrowClass.Text), lvRightArrowKey);
 
             picImage.SizeMode = PictureBoxSizeMode.Zoom;
         }
@@ -71,7 +81,8 @@ namespace FastImageClassifier
                     picImage.Image = Image.FromFile(imagePath);
                     lvSource.Items[0].Selected = true;
                 }
-                else {
+                else
+                {
                     picImage.Image = null;
                 }
             }
@@ -83,7 +94,7 @@ namespace FastImageClassifier
 
         private string GetClassifiedPath(string className)
         {
-            return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), $"Results/{className.Trim().Replace(" ", "")}");
+            return Path.Combine(Config.SourceFolder, $"Results/{className.Trim().Replace(" ", "")}");
         }
 
         private void WriteConfig()
@@ -95,10 +106,10 @@ namespace FastImageClassifier
             File.WriteAllText(configPath, JsonSerializer.Serialize(Config));
         }
 
-        private void LoadSourceFilesList(string folderPath, bool loadImage = true)
+        private void LoadSourceFilesList(bool loadImage = true)
         {
             lvSource.Items.Clear();
-            var files = this.imagesFileFilter.SelectMany(f => Directory.GetFiles(folderPath, f))
+            var files = this.imagesFileFilter.SelectMany(f => Directory.GetFiles(Config.SourceFolder, f))
                                              .Select(f => new FileInfo(f));
 
             foreach (var file in files)
@@ -116,9 +127,8 @@ namespace FastImageClassifier
             }
         }
 
-        private void LoadClassifiedFilesList(string folderName, ListView lv)
+        private void LoadClassifiedFilesList(string folderPath, ListView lv)
         {
-            var folderPath = GetClassifiedPath(folderName);
             if (!Directory.Exists(folderPath))
             {
                 return;
@@ -126,7 +136,7 @@ namespace FastImageClassifier
 
             lv.Items.Clear();
             var files = this.imagesFileFilter.SelectMany(f => Directory.GetFiles(folderPath, f))
-                               .Select(f => new FileInfo(f));
+                                             .Select(f => new FileInfo(f));
 
             foreach (var file in files)
             {
@@ -143,10 +153,9 @@ namespace FastImageClassifier
                 folderBrowserDialog.RootFolder = Environment.SpecialFolder.MyDocuments;
                 if (folderBrowserDialog.ShowDialog() == DialogResult.OK)
                 {
-                    string selectedPath = folderBrowserDialog.SelectedPath;
-                    txtPathSource.Text = selectedPath;
-                    LoadSourceFilesList(selectedPath);
+                    txtPathSource.Text = folderBrowserDialog.SelectedPath;
                     WriteConfig();
+                    LoadSourceFilesList();
                 }
             }
         }
@@ -162,6 +171,8 @@ namespace FastImageClassifier
                 btnFolderSource.Enabled = true;
                 btnStart.Text = "Start";
                 lbStatus.Text = statusTextOff;
+                picImage.Image = null;
+                lvSource.SelectedItems.Clear();
             }
             else
             {
@@ -186,6 +197,75 @@ namespace FastImageClassifier
         {
             lbPositiveImages.Text = txtRightArrowClass.Text;
             WriteConfig();
+        }
+
+        private bool KeyPressHandler(Keys keyData)
+        {
+            if (isClassifying)
+            {
+                try
+                {
+                    if (!(keyData == Keys.Up ||
+                            keyData == Keys.Right ||
+                            keyData == Keys.Down ||
+                            keyData == Keys.Left))
+                    {
+                        return false;
+                    }
+
+                    if (!Directory.Exists(Path.Combine(Config.SourceFolder, "Results")))
+                    {
+                        Directory.CreateDirectory(Path.Combine(Config.SourceFolder, "Results"));
+                    }
+                    var leftArrowClassPath = GetClassifiedPath(Config.LeftArrowClass);
+                    var rightArrowClassPath = GetClassifiedPath(Config.RightArrowClass);
+                    if (!Directory.Exists(leftArrowClassPath))
+                    {
+                        Directory.CreateDirectory(leftArrowClassPath);
+                    }
+                    if (!Directory.Exists(rightArrowClassPath))
+                    {
+                        Directory.CreateDirectory(rightArrowClassPath);
+                    }
+
+                    var destinationPath = leftArrowClassPath;
+                    ListView lv = lvLeftArrowKey;
+                    switch (keyData)
+                    {
+                        case Keys.Right:
+                            destinationPath = rightArrowClassPath;
+                            lv = lvRightArrowKey;
+                            break;
+                    }
+
+                    if (lvSource.SelectedItems.Count > 0)
+                    {
+                        var sourcePath = Path.Combine(Config.SourceFolder, lvSource.SelectedItems[0].Text);
+                        var destPath = Path.Combine(destinationPath, lvSource.SelectedItems[0].Text);
+                        picImage.Image.Dispose();
+                        picImage.Image = null;
+                        File.Move(sourcePath, destPath);
+                        lvSource.Items.RemoveAt(lvSource.SelectedItems[0].Index);
+                        LoadClassifiedFilesList(destinationPath, lv);
+                        LoadSourceFilesList();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+                return true;
+            }
+            else if (!(keyData == Keys.Tab ||
+                        keyData == Keys.Enter ||
+                        keyData == Keys.Escape ||
+                        keyData == Keys.Space))
+            {
+                /* @TODO: Add custom key press handler here when it's not classifying */
+                return false;
+            }
+
+            return false;
         }
     }
 }
