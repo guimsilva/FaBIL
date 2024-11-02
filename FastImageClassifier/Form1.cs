@@ -79,27 +79,20 @@ namespace FastImageClassifier
         private void LoadImage()
         {
             var imagePath = lvSource.Items.Count > 0 ? $"{txtPathSource.Text}\\{lvSource.Items[0].Text}" : string.Empty;
-            if (!string.IsNullOrWhiteSpace(imagePath))
+            if (string.IsNullOrWhiteSpace(imagePath) || !File.Exists(imagePath))
             {
-                if (File.Exists(imagePath))
-                {
-                    picImage.Image = Image.FromFile(imagePath);
-                    lvSource.Items[0].Selected = true;
-                }
-                else
-                {
-                    picImage.Image = null;
-                }
+                picImage.Image = null;
             }
             else
             {
-                picImage.Image = null;
+                picImage.Image = Image.FromFile(imagePath);
+                lvSource.Items[0].Selected = true;
             }
         }
 
         private string GetClassifiedFolderPath(string className)
         {
-            return Path.Combine(config.SourceFolder, $"{resultsFolder}/{className}");
+            return Path.Combine(config.SourceFolder, $"{resultsFolder}\\{className}");
         }
 
         private void WriteConfig()
@@ -127,6 +120,7 @@ namespace FastImageClassifier
 
             lbStatus.Visible = lvSource.Items.Count > 0;
             btnStart.Enabled = lvSource.Items.Count > 0;
+            isClassifying = isClassifying && lvSource.Items.Count > 0;
             if (loadImage)
             {
                 LoadImage();
@@ -202,6 +196,10 @@ namespace FastImageClassifier
                 {
                     Directory.CreateDirectory(GetClassifiedFolderPath(config.RightArrowClass));
                 }
+                if (!Directory.Exists(GetClassifiedFolderPath(unknownFolder)))
+                {
+                    Directory.CreateDirectory(GetClassifiedFolderPath(unknownFolder));
+                }
             }
         }
 
@@ -245,102 +243,102 @@ namespace FastImageClassifier
             lastLvClassified = lvClassified;
         }
 
+        private bool Classify(Keys keyData)
+        {
+            try
+            {
+                if (!(keyData == Keys.Up ||
+                        keyData == Keys.Right ||
+                        keyData == Keys.Down ||
+                        keyData == Keys.Left))
+                {
+                    return false;
+                }
+
+                var destinationFilePath = string.Empty;
+                var destinationFileName = string.Empty;
+                var sourceFilePath = string.Empty;
+                var classfiedFolderPath = string.Empty;
+                ListView? lvClassified = null;
+                switch (keyData)
+                {
+                    case Keys.Left:
+                        if (isSourceEmpty())
+                        {
+                            return true;
+                        }
+                        lvClassified = lvLeftArrowKey;
+                        PrepareLeftRightActions(
+                            out sourceFilePath,
+                            out classfiedFolderPath,
+                            out destinationFilePath,
+                            out destinationFileName,
+                            config.LeftArrowClassName,
+                            lvLeftArrowKey);
+                        break;
+                    case Keys.Right:
+                        if (isSourceEmpty())
+                        {
+                            return true;
+                        }
+                        lvClassified = lvRightArrowKey;
+                        PrepareLeftRightActions(
+                            out sourceFilePath,
+                            out classfiedFolderPath,
+                            out destinationFilePath,
+                            out destinationFileName,
+                            config.RightArrowClass,
+                            lvRightArrowKey);
+                        break;
+                    case Keys.Down: /* Skip */
+                        if (isSourceEmpty())
+                        {
+                            return true;
+                        }
+                        PrepareLeftRightActions(
+                            out sourceFilePath,
+                            out classfiedFolderPath,
+                            out destinationFilePath,
+                            out destinationFileName,
+                            unknownFolder,
+                            null);
+                        break;
+                    case Keys.Up: /* Undo */
+                        if (string.IsNullOrWhiteSpace(lastDestinationFilePath))
+                        {
+                            MessageBox.Show("Can't undo", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            return true;
+                        }
+                        sourceFilePath = lastDestinationFilePath;
+                        lvClassified = lastLvClassified;
+                        classfiedFolderPath = lastDestinationFolderPath;
+                        destinationFilePath = Path.Combine(config.SourceFolder, lastDestinationFileName);
+
+                        lastDestinationFileName = string.Empty;
+                        lastDestinationFilePath = string.Empty;
+                        lastDestinationFolderPath = string.Empty;
+                        lastLvClassified = null;
+                        break;
+                }
+
+                picImage.Image?.Dispose();
+                picImage.Image = null;
+                File.Move(sourceFilePath, destinationFilePath);
+                LoadClassifiedFilesList(classfiedFolderPath, lvClassified);
+                LoadSourceFilesList();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            return true;
+        }
+
         private bool KeyPressHandler(Keys keyData)
         {
             if (isClassifying)
             {
-                try
-                {
-                    if (!(keyData == Keys.Up ||
-                            keyData == Keys.Right ||
-                            keyData == Keys.Down ||
-                            keyData == Keys.Left))
-                    {
-                        return false;
-                    }
-
-                    if (!Directory.Exists(Path.Combine(config.SourceFolder, resultsFolder)))
-                    {
-                        Directory.CreateDirectory(Path.Combine(config.SourceFolder, resultsFolder));
-                    }
-
-                    var destinationFilePath = string.Empty;
-                    var destinationFileName = string.Empty;
-                    var sourceFilePath = string.Empty;
-                    var classfiedFolderPath = string.Empty;
-                    ListView? lvClassified = null;
-                    switch (keyData)
-                    {
-                        case Keys.Left:
-                            if (isSourceEmpty())
-                            {
-                                return true;
-                            }
-                            lvClassified = lvLeftArrowKey;
-                            PrepareLeftRightActions(
-                                out sourceFilePath,
-                                out classfiedFolderPath,
-                                out destinationFilePath,
-                                out destinationFileName,
-                                config.LeftArrowClassName,
-                                lvLeftArrowKey);
-                            break;
-                        case Keys.Right:
-                            if (isSourceEmpty())
-                            {
-                                return true;
-                            }
-                            lvClassified = lvRightArrowKey;
-                            PrepareLeftRightActions(
-                                out sourceFilePath,
-                                out classfiedFolderPath,
-                                out destinationFilePath,
-                                out destinationFileName,
-                                config.RightArrowClass,
-                                lvRightArrowKey);
-                            break;
-                        case Keys.Down: /* Skip */
-                            if (isSourceEmpty())
-                            {
-                                return true;
-                            }
-                            PrepareLeftRightActions(
-                                out sourceFilePath,
-                                out classfiedFolderPath,
-                                out destinationFilePath,
-                                out destinationFileName,
-                                unknownFolder,
-                                null);
-                            break;
-                        case Keys.Up: /* Undo */
-                            if (string.IsNullOrWhiteSpace(lastDestinationFilePath))
-                            {
-                                MessageBox.Show("Can't undo", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                                return true;
-                            }
-                            sourceFilePath = lastDestinationFilePath;
-                            lvClassified = lastLvClassified;
-                            classfiedFolderPath = lastDestinationFolderPath;
-                            destinationFilePath = Path.Combine(config.SourceFolder, lastDestinationFileName);
-
-                            lastDestinationFileName = string.Empty;
-                            lastDestinationFilePath = string.Empty;
-                            lastDestinationFolderPath = string.Empty;
-                            lastLvClassified = null;
-                            break;
-                    }
-
-                    picImage.Image?.Dispose();
-                    picImage.Image = null;
-                    File.Move(sourceFilePath, destinationFilePath);
-                    LoadClassifiedFilesList(classfiedFolderPath, lvClassified);
-                    LoadSourceFilesList();
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
-                return true;
+                return Classify(keyData);
             }
             else if (!(keyData == Keys.Tab ||
                         keyData == Keys.Enter ||
