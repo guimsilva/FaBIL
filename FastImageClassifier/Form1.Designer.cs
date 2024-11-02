@@ -51,9 +51,19 @@
             lbNegativeImages = new Label();
             lbPositiveImages = new Label();
             gpbImage = new GroupBox();
+            tableLayoutPanel1 = new TableLayoutPanel();
+            pnlSourceStart = new Panel();
+            pnlClassified = new Panel();
+            pnlClassifiedRight = new Panel();
+            pnlClassifiedLeft = new Panel();
             gpbSetup.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)picImage).BeginInit();
             gpbImage.SuspendLayout();
+            tableLayoutPanel1.SuspendLayout();
+            pnlSourceStart.SuspendLayout();
+            pnlClassified.SuspendLayout();
+            pnlClassifiedRight.SuspendLayout();
+            pnlClassifiedLeft.SuspendLayout();
             SuspendLayout();
             // 
             // gpbSetup
@@ -69,9 +79,9 @@
             gpbSetup.Controls.Add(lblLeftArrow);
             gpbSetup.Controls.Add(txtRightArrowClass);
             gpbSetup.Controls.Add(txtLeftArrowClass);
-            gpbSetup.Location = new Point(12, 12);
+            gpbSetup.Location = new Point(3, 3);
             gpbSetup.Name = "gpbSetup";
-            gpbSetup.Size = new Size(439, 407);
+            gpbSetup.Size = new Size(438, 407);
             gpbSetup.TabIndex = 0;
             gpbSetup.TabStop = false;
             gpbSetup.Text = "Setup";
@@ -179,9 +189,10 @@
             // 
             // picImage
             // 
-            picImage.Location = new Point(6, 22);
+            picImage.Dock = DockStyle.Fill;
+            picImage.Location = new Point(3, 19);
             picImage.Name = "picImage";
-            picImage.Size = new Size(582, 379);
+            picImage.Size = new Size(587, 385);
             picImage.TabIndex = 1;
             picImage.TabStop = false;
             // 
@@ -189,9 +200,9 @@
             // 
             btnStart.Enabled = false;
             btnStart.Font = new Font("Segoe UI", 12F);
-            btnStart.Location = new Point(10, 676);
+            btnStart.Location = new Point(8, 266);
             btnStart.Name = "btnStart";
-            btnStart.Size = new Size(439, 55);
+            btnStart.Size = new Size(420, 55);
             btnStart.TabIndex = 4;
             btnStart.Text = "Start (F5)";
             btnStart.UseVisualStyleBackColor = true;
@@ -201,38 +212,40 @@
             // 
             lvSource.Enabled = false;
             lvSource.Font = new Font("Segoe UI", 8F);
-            lvSource.Location = new Point(10, 440);
+            lvSource.Location = new Point(8, 32);
             lvSource.Name = "lvSource";
-            lvSource.Size = new Size(439, 230);
+            lvSource.Size = new Size(420, 230);
             lvSource.TabIndex = 3;
             lvSource.UseCompatibleStateImageBehavior = false;
             // 
             // lvLeftArrowKey
             // 
+            lvLeftArrowKey.Dock = DockStyle.Bottom;
             lvLeftArrowKey.Enabled = false;
             lvLeftArrowKey.Font = new Font("Segoe UI", 8F);
             lvLeftArrowKey.ForeColor = Color.MediumOrchid;
-            lvLeftArrowKey.Location = new Point(457, 440);
+            lvLeftArrowKey.Location = new Point(0, 33);
             lvLeftArrowKey.Name = "lvLeftArrowKey";
-            lvLeftArrowKey.Size = new Size(293, 291);
+            lvLeftArrowKey.Size = new Size(280, 291);
             lvLeftArrowKey.TabIndex = 4;
             lvLeftArrowKey.UseCompatibleStateImageBehavior = false;
             // 
             // lvRightArrowKey
             // 
+            lvRightArrowKey.Dock = DockStyle.Bottom;
             lvRightArrowKey.Enabled = false;
             lvRightArrowKey.Font = new Font("Segoe UI", 8F);
             lvRightArrowKey.ForeColor = Color.SlateBlue;
-            lvRightArrowKey.Location = new Point(758, 440);
+            lvRightArrowKey.Location = new Point(0, 33);
             lvRightArrowKey.Name = "lvRightArrowKey";
-            lvRightArrowKey.Size = new Size(293, 291);
+            lvRightArrowKey.Size = new Size(280, 291);
             lvRightArrowKey.TabIndex = 5;
             lvRightArrowKey.UseCompatibleStateImageBehavior = false;
             // 
             // lbSourceList
             // 
             lbSourceList.AutoSize = true;
-            lbSourceList.Location = new Point(10, 422);
+            lbSourceList.Location = new Point(8, 14);
             lbSourceList.Name = "lbSourceList";
             lbSourceList.Size = new Size(43, 15);
             lbSourceList.TabIndex = 6;
@@ -243,7 +256,7 @@
             lbNegativeImages.AutoSize = true;
             lbNegativeImages.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
             lbNegativeImages.ForeColor = Color.MediumOrchid;
-            lbNegativeImages.Location = new Point(457, 422);
+            lbNegativeImages.Location = new Point(3, 14);
             lbNegativeImages.Name = "lbNegativeImages";
             lbNegativeImages.Size = new Size(58, 15);
             lbNegativeImages.TabIndex = 7;
@@ -254,7 +267,7 @@
             lbPositiveImages.AutoSize = true;
             lbPositiveImages.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
             lbPositiveImages.ForeColor = Color.SlateBlue;
-            lbPositiveImages.Location = new Point(758, 422);
+            lbPositiveImages.Location = new Point(3, 14);
             lbPositiveImages.Name = "lbPositiveImages";
             lbPositiveImages.Size = new Size(51, 15);
             lbPositiveImages.TabIndex = 8;
@@ -262,28 +275,81 @@
             // 
             // gpbImage
             // 
+            gpbImage.AutoSize = true;
             gpbImage.Controls.Add(picImage);
-            gpbImage.Location = new Point(457, 12);
+            gpbImage.Dock = DockStyle.Fill;
+            gpbImage.Location = new Point(453, 3);
             gpbImage.Name = "gpbImage";
-            gpbImage.Size = new Size(594, 407);
+            gpbImage.Size = new Size(593, 407);
             gpbImage.TabIndex = 9;
             gpbImage.TabStop = false;
             gpbImage.Text = "Image";
+            // 
+            // tableLayoutPanel1
+            // 
+            tableLayoutPanel1.ColumnCount = 2;
+            tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 450F));
+            tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle());
+            tableLayoutPanel1.Controls.Add(pnlSourceStart, 0, 1);
+            tableLayoutPanel1.Controls.Add(gpbImage, 1, 0);
+            tableLayoutPanel1.Controls.Add(pnlClassified, 1, 1);
+            tableLayoutPanel1.Controls.Add(gpbSetup, 0, 0);
+            tableLayoutPanel1.Location = new Point(12, 12);
+            tableLayoutPanel1.Name = "tableLayoutPanel1";
+            tableLayoutPanel1.RowCount = 2;
+            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
+            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Absolute, 330F));
+            tableLayoutPanel1.Size = new Size(1049, 743);
+            tableLayoutPanel1.TabIndex = 10;
+            // 
+            // pnlSourceStart
+            // 
+            pnlSourceStart.Controls.Add(lvSource);
+            pnlSourceStart.Controls.Add(btnStart);
+            pnlSourceStart.Controls.Add(lbSourceList);
+            pnlSourceStart.Dock = DockStyle.Fill;
+            pnlSourceStart.Location = new Point(3, 416);
+            pnlSourceStart.Name = "pnlSourceStart";
+            pnlSourceStart.Size = new Size(444, 324);
+            pnlSourceStart.TabIndex = 0;
+            // 
+            // pnlClassified
+            // 
+            pnlClassified.AutoSize = true;
+            pnlClassified.Controls.Add(pnlClassifiedRight);
+            pnlClassified.Controls.Add(pnlClassifiedLeft);
+            pnlClassified.Dock = DockStyle.Fill;
+            pnlClassified.Location = new Point(453, 416);
+            pnlClassified.Name = "pnlClassified";
+            pnlClassified.Size = new Size(593, 324);
+            pnlClassified.TabIndex = 1;
+            // 
+            // pnlClassifiedRight
+            // 
+            pnlClassifiedRight.Controls.Add(lvRightArrowKey);
+            pnlClassifiedRight.Controls.Add(lbPositiveImages);
+            pnlClassifiedRight.Dock = DockStyle.Right;
+            pnlClassifiedRight.Location = new Point(313, 0);
+            pnlClassifiedRight.Name = "pnlClassifiedRight";
+            pnlClassifiedRight.Size = new Size(280, 324);
+            pnlClassifiedRight.TabIndex = 1;
+            // 
+            // pnlClassifiedLeft
+            // 
+            pnlClassifiedLeft.Controls.Add(lvLeftArrowKey);
+            pnlClassifiedLeft.Controls.Add(lbNegativeImages);
+            pnlClassifiedLeft.Dock = DockStyle.Left;
+            pnlClassifiedLeft.Location = new Point(0, 0);
+            pnlClassifiedLeft.Name = "pnlClassifiedLeft";
+            pnlClassifiedLeft.Size = new Size(280, 324);
+            pnlClassifiedLeft.TabIndex = 0;
             // 
             // FrmMain
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(1063, 743);
-            Controls.Add(gpbImage);
-            Controls.Add(lbPositiveImages);
-            Controls.Add(lbNegativeImages);
-            Controls.Add(lbSourceList);
-            Controls.Add(lvRightArrowKey);
-            Controls.Add(lvLeftArrowKey);
-            Controls.Add(lvSource);
-            Controls.Add(btnStart);
-            Controls.Add(gpbSetup);
+            ClientSize = new Size(1070, 766);
+            Controls.Add(tableLayoutPanel1);
             Name = "FrmMain";
             StartPosition = FormStartPosition.CenterScreen;
             Text = "Fast Binary Image Classifier";
@@ -291,8 +357,16 @@
             gpbSetup.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)picImage).EndInit();
             gpbImage.ResumeLayout(false);
+            tableLayoutPanel1.ResumeLayout(false);
+            tableLayoutPanel1.PerformLayout();
+            pnlSourceStart.ResumeLayout(false);
+            pnlSourceStart.PerformLayout();
+            pnlClassified.ResumeLayout(false);
+            pnlClassifiedRight.ResumeLayout(false);
+            pnlClassifiedRight.PerformLayout();
+            pnlClassifiedLeft.ResumeLayout(false);
+            pnlClassifiedLeft.PerformLayout();
             ResumeLayout(false);
-            PerformLayout();
         }
 
         #endregion
@@ -319,5 +393,10 @@
         private Label lbPositiveImages;
         private GroupBox gpbImage;
         private Label lbStatus;
+        private TableLayoutPanel tableLayoutPanel1;
+        private Panel pnlSourceStart;
+        private Panel pnlClassified;
+        private Panel pnlClassifiedRight;
+        private Panel pnlClassifiedLeft;
     }
 }
