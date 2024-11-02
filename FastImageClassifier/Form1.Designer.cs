@@ -46,6 +46,9 @@
             lvSource = new ListView();
             lvLeftArrowKey = new ListView();
             lvRightArrowKey = new ListView();
+            lbSourceList = new Label();
+            lbNegativeImages = new Label();
+            lbPositiveImages = new Label();
             gpbClassesDetails.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)picImage).BeginInit();
             SuspendLayout();
@@ -64,7 +67,7 @@
             gpbClassesDetails.Controls.Add(txtLeftArrowClass);
             gpbClassesDetails.Location = new Point(12, 12);
             gpbClassesDetails.Name = "gpbClassesDetails";
-            gpbClassesDetails.Size = new Size(439, 340);
+            gpbClassesDetails.Size = new Size(439, 346);
             gpbClassesDetails.TabIndex = 0;
             gpbClassesDetails.TabStop = false;
             gpbClassesDetails.Text = "Classes Details";
@@ -99,9 +102,9 @@
             lbSource.AutoSize = true;
             lbSource.Location = new Point(6, 150);
             lbSource.Name = "lbSource";
-            lbSource.Size = new Size(83, 15);
+            lbSource.Size = new Size(117, 15);
             lbSource.TabIndex = 8;
-            lbSource.Text = "Images source";
+            lbSource.Text = "Images source folder";
             // 
             // label2
             // 
@@ -156,19 +159,20 @@
             txtLeftArrowClass.Size = new Size(254, 23);
             txtLeftArrowClass.TabIndex = 1;
             txtLeftArrowClass.Text = "Negative";
+            txtLeftArrowClass.TextChanged += txtLeftArrowClass_TextChanged;
             // 
             // picImage
             // 
             picImage.Location = new Point(457, 12);
             picImage.Name = "picImage";
-            picImage.Size = new Size(594, 340);
+            picImage.Size = new Size(594, 420);
             picImage.TabIndex = 1;
             picImage.TabStop = false;
             // 
             // btnStart
             // 
             btnStart.Font = new Font("Segoe UI", 12F);
-            btnStart.Location = new Point(12, 539);
+            btnStart.Location = new Point(12, 619);
             btnStart.Name = "btnStart";
             btnStart.Size = new Size(439, 55);
             btnStart.TabIndex = 2;
@@ -178,35 +182,66 @@
             // 
             // lvSource
             // 
-            lvSource.Location = new Point(12, 358);
+            lvSource.Enabled = false;
+            lvSource.Location = new Point(12, 383);
             lvSource.Name = "lvSource";
-            lvSource.Size = new Size(439, 175);
+            lvSource.Size = new Size(439, 230);
             lvSource.TabIndex = 3;
             lvSource.UseCompatibleStateImageBehavior = false;
             // 
             // lvLeftArrowKey
             // 
             lvLeftArrowKey.Enabled = false;
-            lvLeftArrowKey.Location = new Point(459, 358);
+            lvLeftArrowKey.Location = new Point(459, 457);
             lvLeftArrowKey.Name = "lvLeftArrowKey";
-            lvLeftArrowKey.Size = new Size(293, 236);
+            lvLeftArrowKey.Size = new Size(293, 217);
             lvLeftArrowKey.TabIndex = 4;
             lvLeftArrowKey.UseCompatibleStateImageBehavior = false;
             // 
             // lvRightArrowKey
             // 
             lvRightArrowKey.Enabled = false;
-            lvRightArrowKey.Location = new Point(758, 358);
+            lvRightArrowKey.Location = new Point(758, 457);
             lvRightArrowKey.Name = "lvRightArrowKey";
-            lvRightArrowKey.Size = new Size(293, 236);
+            lvRightArrowKey.Size = new Size(293, 217);
             lvRightArrowKey.TabIndex = 5;
             lvRightArrowKey.UseCompatibleStateImageBehavior = false;
+            // 
+            // lbSourceList
+            // 
+            lbSourceList.AutoSize = true;
+            lbSourceList.Location = new Point(12, 365);
+            lbSourceList.Name = "lbSourceList";
+            lbSourceList.Size = new Size(43, 15);
+            lbSourceList.TabIndex = 6;
+            lbSourceList.Text = "Source";
+            // 
+            // lbNegativeImages
+            // 
+            lbNegativeImages.AutoSize = true;
+            lbNegativeImages.Location = new Point(459, 439);
+            lbNegativeImages.Name = "lbNegativeImages";
+            lbNegativeImages.Size = new Size(54, 15);
+            lbNegativeImages.TabIndex = 7;
+            lbNegativeImages.Text = "Negative";
+            // 
+            // lbPositiveImages
+            // 
+            lbPositiveImages.AutoSize = true;
+            lbPositiveImages.Location = new Point(758, 439);
+            lbPositiveImages.Name = "lbPositiveImages";
+            lbPositiveImages.Size = new Size(48, 15);
+            lbPositiveImages.TabIndex = 8;
+            lbPositiveImages.Text = "Positive";
             // 
             // FrmMain
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(1063, 606);
+            ClientSize = new Size(1063, 687);
+            Controls.Add(lbPositiveImages);
+            Controls.Add(lbNegativeImages);
+            Controls.Add(lbSourceList);
             Controls.Add(lvRightArrowKey);
             Controls.Add(lvLeftArrowKey);
             Controls.Add(lvSource);
@@ -220,6 +255,7 @@
             gpbClassesDetails.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)picImage).EndInit();
             ResumeLayout(false);
+            PerformLayout();
         }
 
         #endregion
@@ -241,5 +277,8 @@
         private ListView lvLeftArrowKey;
         private ListView lvRightArrowKey;
         private Label lbInstructions;
+        private Label lbSourceList;
+        private Label lbNegativeImages;
+        private Label lbPositiveImages;
     }
 }

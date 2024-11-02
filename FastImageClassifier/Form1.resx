@@ -121,7 +121,7 @@
     <value>A folder for each class name will be created under
 ".../&lt;images source folder&gt;/results/" if it doesn't already exist.
 
-To skip an image, use the "down arrow key" to move to the next one, which will cause the existing image to move to the "unknown" folder.
+To skip an image, use the "down arrow key" to move to the next one, which will cause the existing image to move to the "Unknown" folder.
 
 Use the "up arrow key" to undo the previous action.</value>
   </data>
