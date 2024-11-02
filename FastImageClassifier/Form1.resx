@@ -117,9 +117,9 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="label3.Text" xml:space="preserve">
+  <data name="lbInstructions.Text" xml:space="preserve">
     <value>A folder for each class name will be created under
-".../&lt;source folder&gt;/&lt;results&gt;/" if it doesn't already exist.
+".../&lt;images source folder&gt;/results/" if it doesn't already exist.
 
 To skip an image, use the "down arrow key" to move to the next one, which will cause the existing image to move to the "unknown" folder.
 

@@ -30,7 +30,7 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FrmMain));
             gpbClassesDetails = new GroupBox();
-            label3 = new Label();
+            lbInstructions = new Label();
             txtPathSource = new TextBox();
             btnFolderSource = new Button();
             lbSource = new Label();
@@ -41,12 +41,18 @@
             txtRightArrowClass = new TextBox();
             txtLeftArrowClass = new TextBox();
             foderDestination = new FolderBrowserDialog();
+            picImage = new PictureBox();
+            btnStart = new Button();
+            lvSource = new ListView();
+            lvLeftArrowKey = new ListView();
+            lvRightArrowKey = new ListView();
             gpbClassesDetails.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)picImage).BeginInit();
             SuspendLayout();
             // 
             // gpbClassesDetails
             // 
-            gpbClassesDetails.Controls.Add(label3);
+            gpbClassesDetails.Controls.Add(lbInstructions);
             gpbClassesDetails.Controls.Add(txtPathSource);
             gpbClassesDetails.Controls.Add(btnFolderSource);
             gpbClassesDetails.Controls.Add(lbSource);
@@ -58,18 +64,18 @@
             gpbClassesDetails.Controls.Add(txtLeftArrowClass);
             gpbClassesDetails.Location = new Point(12, 12);
             gpbClassesDetails.Name = "gpbClassesDetails";
-            gpbClassesDetails.Size = new Size(439, 357);
+            gpbClassesDetails.Size = new Size(439, 340);
             gpbClassesDetails.TabIndex = 0;
             gpbClassesDetails.TabStop = false;
             gpbClassesDetails.Text = "Classes Details";
             // 
-            // label3
+            // lbInstructions
             // 
-            label3.Location = new Point(6, 229);
-            label3.Name = "label3";
-            label3.Size = new Size(427, 118);
-            label3.TabIndex = 14;
-            label3.Text = resources.GetString("label3.Text");
+            lbInstructions.Location = new Point(6, 218);
+            lbInstructions.Name = "lbInstructions";
+            lbInstructions.Size = new Size(427, 119);
+            lbInstructions.TabIndex = 11;
+            lbInstructions.Text = resources.GetString("lbInstructions.Text");
             // 
             // txtPathSource
             // 
@@ -93,9 +99,9 @@
             lbSource.AutoSize = true;
             lbSource.Location = new Point(6, 150);
             lbSource.Name = "lbSource";
-            lbSource.Size = new Size(43, 15);
+            lbSource.Size = new Size(83, 15);
             lbSource.TabIndex = 8;
-            lbSource.Text = "Source";
+            lbSource.Text = "Images source";
             // 
             // label2
             // 
@@ -151,17 +157,68 @@
             txtLeftArrowClass.TabIndex = 1;
             txtLeftArrowClass.Text = "Negative";
             // 
+            // picImage
+            // 
+            picImage.Location = new Point(457, 12);
+            picImage.Name = "picImage";
+            picImage.Size = new Size(594, 340);
+            picImage.TabIndex = 1;
+            picImage.TabStop = false;
+            // 
+            // btnStart
+            // 
+            btnStart.Font = new Font("Segoe UI", 12F);
+            btnStart.Location = new Point(12, 539);
+            btnStart.Name = "btnStart";
+            btnStart.Size = new Size(439, 55);
+            btnStart.TabIndex = 2;
+            btnStart.Text = "Start";
+            btnStart.UseVisualStyleBackColor = true;
+            btnStart.Click += btnStart_Click;
+            // 
+            // lvSource
+            // 
+            lvSource.Location = new Point(12, 358);
+            lvSource.Name = "lvSource";
+            lvSource.Size = new Size(439, 175);
+            lvSource.TabIndex = 3;
+            lvSource.UseCompatibleStateImageBehavior = false;
+            // 
+            // lvLeftArrowKey
+            // 
+            lvLeftArrowKey.Enabled = false;
+            lvLeftArrowKey.Location = new Point(459, 358);
+            lvLeftArrowKey.Name = "lvLeftArrowKey";
+            lvLeftArrowKey.Size = new Size(293, 236);
+            lvLeftArrowKey.TabIndex = 4;
+            lvLeftArrowKey.UseCompatibleStateImageBehavior = false;
+            // 
+            // lvRightArrowKey
+            // 
+            lvRightArrowKey.Enabled = false;
+            lvRightArrowKey.Location = new Point(758, 358);
+            lvRightArrowKey.Name = "lvRightArrowKey";
+            lvRightArrowKey.Size = new Size(293, 236);
+            lvRightArrowKey.TabIndex = 5;
+            lvRightArrowKey.UseCompatibleStateImageBehavior = false;
+            // 
             // FrmMain
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(1063, 516);
+            ClientSize = new Size(1063, 606);
+            Controls.Add(lvRightArrowKey);
+            Controls.Add(lvLeftArrowKey);
+            Controls.Add(lvSource);
+            Controls.Add(btnStart);
+            Controls.Add(picImage);
             Controls.Add(gpbClassesDetails);
             Name = "FrmMain";
             StartPosition = FormStartPosition.CenterScreen;
             Text = "Fast Image Classifier";
             gpbClassesDetails.ResumeLayout(false);
             gpbClassesDetails.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)picImage).EndInit();
             ResumeLayout(false);
         }
 
@@ -178,6 +235,11 @@
         private Button btnFolderSource;
         private Label lbSource;
         private TextBox txtPathSource;
-        private Label label3;
+        private PictureBox picImage;
+        private Button btnStart;
+        private ListView lvSource;
+        private ListView lvLeftArrowKey;
+        private ListView lvRightArrowKey;
+        private Label lbInstructions;
     }
 }
