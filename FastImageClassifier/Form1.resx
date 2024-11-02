@@ -119,9 +119,9 @@
   </resheader>
   <data name="lbInstructions.Text" xml:space="preserve">
     <value>A folder for each class name will be created under
-".../&lt;images source folder&gt;/results/" if it doesn't already exist.
+"/&lt;images source folder&gt;/Results/" if it doesn't already exist.
 
-To skip an image, use the "down arrow key" to move to the next one, which will cause the existing image to move to the "Unknown" folder.
+To skip an image, use the "down arrow key" to move to the next one, which will cause the existing image to be moved to the "/Results/Unknown" folder.
 
 Use the "up arrow key" to undo the previous action.</value>
   </data>

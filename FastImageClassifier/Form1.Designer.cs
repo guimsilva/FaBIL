@@ -84,6 +84,7 @@
             // 
             // txtPathSource
             // 
+            txtPathSource.Enabled = false;
             txtPathSource.Location = new Point(179, 147);
             txtPathSource.Name = "txtPathSource";
             txtPathSource.Size = new Size(254, 23);
@@ -263,7 +264,7 @@
             Controls.Add(gpbSetup);
             Name = "FrmMain";
             StartPosition = FormStartPosition.CenterScreen;
-            Text = "Fast Image Classifier";
+            Text = "Fast Binary Image Classifier";
             gpbSetup.ResumeLayout(false);
             gpbSetup.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)picImage).EndInit();
