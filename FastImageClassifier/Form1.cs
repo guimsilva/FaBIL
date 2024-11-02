@@ -225,7 +225,7 @@ namespace FastImageClassifier
             return false;
         }
 
-        private void PrepareLeftRightActions(
+        private void PrepareClassification(
             out string sourceFilePath,
             out string classfiedFolderPath,
             out string destinationFilePath,
@@ -252,7 +252,7 @@ namespace FastImageClassifier
                         keyData == Keys.Down ||
                         keyData == Keys.Left))
                 {
-                    return false;
+                    return true;
                 }
 
                 var destinationFilePath = string.Empty;
@@ -268,7 +268,7 @@ namespace FastImageClassifier
                             return true;
                         }
                         lvClassified = lvLeftArrowKey;
-                        PrepareLeftRightActions(
+                        PrepareClassification(
                             out sourceFilePath,
                             out classfiedFolderPath,
                             out destinationFilePath,
@@ -282,7 +282,7 @@ namespace FastImageClassifier
                             return true;
                         }
                         lvClassified = lvRightArrowKey;
-                        PrepareLeftRightActions(
+                        PrepareClassification(
                             out sourceFilePath,
                             out classfiedFolderPath,
                             out destinationFilePath,
@@ -290,12 +290,12 @@ namespace FastImageClassifier
                             config.RightArrowClass,
                             lvRightArrowKey);
                         break;
-                    case Keys.Down: /* Skip */
+                    case Keys.Down: /* Skip - Unknown */
                         if (isSourceEmpty())
                         {
                             return true;
                         }
-                        PrepareLeftRightActions(
+                        PrepareClassification(
                             out sourceFilePath,
                             out classfiedFolderPath,
                             out destinationFilePath,
@@ -303,7 +303,7 @@ namespace FastImageClassifier
                             unknownFolder,
                             null);
                         break;
-                    case Keys.Up: /* Undo */
+                    case Keys.Up: /* Undo - only last Left/Right/Down key - it doesn't have a full history atm */
                         if (string.IsNullOrWhiteSpace(lastDestinationFilePath))
                         {
                             MessageBox.Show("Can't undo", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -339,14 +339,6 @@ namespace FastImageClassifier
             if (isClassifying)
             {
                 return Classify(keyData);
-            }
-            else if (!(keyData == Keys.Tab ||
-                        keyData == Keys.Enter ||
-                        keyData == Keys.Escape ||
-                        keyData == Keys.Space))
-            {
-                /* @TODO: Add custom key press handler here when it's not classifying */
-                return false;
             }
 
             return false;
