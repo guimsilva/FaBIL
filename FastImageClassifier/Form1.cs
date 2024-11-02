@@ -14,6 +14,7 @@ namespace FastImageClassifier
         private readonly List<string> imagesFileFilter = new List<string> { "*.jpg", "*.jpeg", "*.png", "*.gif" };
         private Config Config { get; set; } = new Config();
         private bool canWriteConfig = false;
+        private bool isClassifying = false;
 
         private void FrmMain_Load(object? sender, EventArgs e)
         {
@@ -131,7 +132,24 @@ namespace FastImageClassifier
 
         private void btnStart_Click(object sender, EventArgs e)
         {
-
+            if (isClassifying)
+            {
+                isClassifying = false;
+                txtLeftArrowClass.Enabled = true;
+                txtRightArrowClass.Enabled = true;
+                txtPathSource.Enabled = true;
+                btnFolderSource.Enabled = true;
+                btnStart.Text = "Start";
+            }
+            else
+            {
+                isClassifying = true;
+                txtLeftArrowClass.Enabled = false;
+                txtRightArrowClass.Enabled = false;
+                txtPathSource.Enabled = false;
+                btnFolderSource.Enabled = false;
+                btnStart.Text = "Stop";
+            }
         }
 
         private void txtLeftArrowClass_TextChanged(object sender, EventArgs e)

@@ -95,7 +95,7 @@
             btnFolderSource.Location = new Point(179, 176);
             btnFolderSource.Name = "btnFolderSource";
             btnFolderSource.Size = new Size(254, 23);
-            btnFolderSource.TabIndex = 9;
+            btnFolderSource.TabIndex = 3;
             btnFolderSource.Text = "Select folder";
             btnFolderSource.UseVisualStyleBackColor = true;
             btnFolderSource.Click += btnFolderSource_Click;
@@ -152,7 +152,7 @@
             txtRightArrowClass.Location = new Point(179, 89);
             txtRightArrowClass.Name = "txtRightArrowClass";
             txtRightArrowClass.Size = new Size(254, 23);
-            txtRightArrowClass.TabIndex = 3;
+            txtRightArrowClass.TabIndex = 2;
             txtRightArrowClass.Text = "Positive";
             txtRightArrowClass.TextChanged += txtRightArrowClass_TextChanged;
             // 
@@ -179,7 +179,7 @@
             btnStart.Location = new Point(10, 676);
             btnStart.Name = "btnStart";
             btnStart.Size = new Size(439, 55);
-            btnStart.TabIndex = 2;
+            btnStart.TabIndex = 4;
             btnStart.Text = "Start";
             btnStart.UseVisualStyleBackColor = true;
             btnStart.Click += btnStart_Click;
