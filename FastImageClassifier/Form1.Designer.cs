@@ -187,6 +187,7 @@
             // 
             // btnStart
             // 
+            btnStart.Enabled = false;
             btnStart.Font = new Font("Segoe UI", 12F);
             btnStart.Location = new Point(10, 676);
             btnStart.Name = "btnStart";

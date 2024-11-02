@@ -14,9 +14,16 @@ namespace FastImageClassifier
         private readonly string statusTextOn = "Use your arrow keys to classify the images or click \"Stop\"";
         private readonly string configPath = "Config.json";
         private readonly List<string> imagesFileFilter = new List<string> { "*.jpg", "*.jpeg", "*.png", "*.gif" };
-        private Config Config { get; set; } = new Config();
+        private readonly string resultsFolder = "Results";
+        private readonly string unknownFolder = "Unknown";
+
+        private Config config { get; set; } = new Config();
         private bool canWriteConfig = false;
         private bool isClassifying = false;
+        private string lastDestinationFolderPath = string.Empty;
+        private string lastDestinationFilePath = string.Empty;
+        private string lastDestinationFileName = string.Empty;
+        private ListView? lastLvClassified = null;
 
         protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
         {
@@ -31,18 +38,16 @@ namespace FastImageClassifier
         {
             if (File.Exists(configPath))
             {
-                Config = JsonSerializer.Deserialize<Config>(File.ReadAllText("Config.json"))!;
+                config = JsonSerializer.Deserialize<Config>(File.ReadAllText("Config.json"))!;
             }
             else
             {
-                File.WriteAllText(configPath, JsonSerializer.Serialize(Config));
+                File.WriteAllText(configPath, JsonSerializer.Serialize(config));
             }
 
-            txtPathSource.Text = Config.SourceFolder;
-            txtLeftArrowClass.Text = Config.LeftArrowClass;
-            txtRightArrowClass.Text = Config.RightArrowClass;
-            lbNegativeImages.Text = txtLeftArrowClass.Text;
-            lbPositiveImages.Text = txtRightArrowClass.Text;
+            txtPathSource.Text = config.SourceFolder;
+            lbNegativeImages.Text = txtLeftArrowClass.Text = config.LeftArrowClassName;
+            lbPositiveImages.Text = txtRightArrowClass.Text = config.RightArrowClass;
             lbStatus.Text = statusTextOff;
             canWriteConfig = true;
 
@@ -59,14 +64,14 @@ namespace FastImageClassifier
             lvLeftArrowKey.GridLines = true;
             lvLeftArrowKey.Columns.Add("Name", 200);
             lvLeftArrowKey.Columns.Add("Date Modified", 93);
-            LoadClassifiedFilesList(Path.Combine(Config.SourceFolder, "Results", txtLeftArrowClass.Text), lvLeftArrowKey);
+            LoadClassifiedFilesList(Path.Combine(config.SourceFolder, resultsFolder, config.LeftArrowClassName), lvLeftArrowKey);
 
             lvRightArrowKey.View = View.Details;
             lvRightArrowKey.FullRowSelect = true;
             lvRightArrowKey.GridLines = true;
             lvRightArrowKey.Columns.Add("Name", 200);
             lvRightArrowKey.Columns.Add("Date Modified", 93);
-            LoadClassifiedFilesList(Path.Combine(Config.SourceFolder, "Results", txtRightArrowClass.Text), lvRightArrowKey);
+            LoadClassifiedFilesList(Path.Combine(config.SourceFolder, resultsFolder, config.RightArrowClass), lvRightArrowKey);
 
             picImage.SizeMode = PictureBoxSizeMode.Zoom;
         }
@@ -92,24 +97,24 @@ namespace FastImageClassifier
             }
         }
 
-        private string GetClassifiedPath(string className)
+        private string GetClassifiedFolderPath(string className)
         {
-            return Path.Combine(Config.SourceFolder, $"Results/{className.Trim().Replace(" ", "")}");
+            return Path.Combine(config.SourceFolder, $"{resultsFolder}/{className}");
         }
 
         private void WriteConfig()
         {
             if (!canWriteConfig) return;
-            Config.SourceFolder = txtPathSource.Text;
-            Config.LeftArrowClass = txtLeftArrowClass.Text;
-            Config.RightArrowClass = txtRightArrowClass.Text;
-            File.WriteAllText(configPath, JsonSerializer.Serialize(Config));
+            config.SourceFolder = txtPathSource.Text;
+            config.LeftArrowClassName = txtLeftArrowClass.Text.Trim().Replace(" ", "");
+            config.RightArrowClass = txtRightArrowClass.Text.Trim().Replace(" ", "");
+            File.WriteAllText(configPath, JsonSerializer.Serialize(config));
         }
 
         private void LoadSourceFilesList(bool loadImage = true)
         {
             lvSource.Items.Clear();
-            var files = this.imagesFileFilter.SelectMany(f => Directory.GetFiles(Config.SourceFolder, f))
+            var files = this.imagesFileFilter.SelectMany(f => Directory.GetFiles(config.SourceFolder, f))
                                              .Select(f => new FileInfo(f));
 
             foreach (var file in files)
@@ -121,15 +126,16 @@ namespace FastImageClassifier
             }
 
             lbStatus.Visible = lvSource.Items.Count > 0;
+            btnStart.Enabled = lvSource.Items.Count > 0;
             if (loadImage)
             {
                 LoadImage();
             }
         }
 
-        private void LoadClassifiedFilesList(string folderPath, ListView lv)
+        private void LoadClassifiedFilesList(string folderPath, ListView? lv)
         {
-            if (!Directory.Exists(folderPath))
+            if (lv is null || !Directory.Exists(folderPath))
             {
                 return;
             }
@@ -184,19 +190,59 @@ namespace FastImageClassifier
                 btnStart.Text = "Stop";
                 lbStatus.Text = statusTextOn;
                 LoadImage();
+                if (!Directory.Exists(Path.Combine(config.SourceFolder, resultsFolder)))
+                {
+                    Directory.CreateDirectory(Path.Combine(config.SourceFolder, resultsFolder));
+                }
+                if (!Directory.Exists(GetClassifiedFolderPath(config.LeftArrowClassName)))
+                {
+                    Directory.CreateDirectory(GetClassifiedFolderPath(config.LeftArrowClassName));
+                }
+                if (!Directory.Exists(GetClassifiedFolderPath(config.RightArrowClass)))
+                {
+                    Directory.CreateDirectory(GetClassifiedFolderPath(config.RightArrowClass));
+                }
             }
         }
 
         private void txtLeftArrowClass_TextChanged(object sender, EventArgs e)
         {
-            lbNegativeImages.Text = txtLeftArrowClass.Text;
+            lbNegativeImages.Text = txtLeftArrowClass.Text.Trim().Replace(" ", "");
             WriteConfig();
         }
 
         private void txtRightArrowClass_TextChanged(object sender, EventArgs e)
         {
-            lbPositiveImages.Text = txtRightArrowClass.Text;
+            lbPositiveImages.Text = txtRightArrowClass.Text.Trim().Replace(" ", "");
             WriteConfig();
+        }
+
+        private bool isSourceEmpty()
+        {
+            if (lvSource.Items.Count == 0)
+            {
+                MessageBox.Show("No images to classify", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return true;
+            }
+            return false;
+        }
+
+        private void PrepareLeftRightActions(
+            out string sourceFilePath,
+            out string classfiedFolderPath,
+            out string destinationFilePath,
+            out string destinationFileName,
+            string className,
+            ListView? lvClassified)
+        {
+            destinationFileName = lvSource.SelectedItems[0].Text;
+            sourceFilePath = Path.Combine(config.SourceFolder, destinationFileName);
+            var destinationFolderPath = classfiedFolderPath = GetClassifiedFolderPath(className);
+            destinationFilePath = Path.Combine(destinationFolderPath, destinationFileName);
+            lastDestinationFileName = destinationFileName;
+            lastDestinationFilePath = destinationFilePath;
+            lastDestinationFolderPath = destinationFolderPath;
+            lastLvClassified = lvClassified;
         }
 
         private bool KeyPressHandler(Keys keyData)
@@ -213,42 +259,82 @@ namespace FastImageClassifier
                         return false;
                     }
 
-                    if (!Directory.Exists(Path.Combine(Config.SourceFolder, "Results")))
+                    if (!Directory.Exists(Path.Combine(config.SourceFolder, resultsFolder)))
                     {
-                        Directory.CreateDirectory(Path.Combine(Config.SourceFolder, "Results"));
-                    }
-                    var leftArrowClassPath = GetClassifiedPath(Config.LeftArrowClass);
-                    var rightArrowClassPath = GetClassifiedPath(Config.RightArrowClass);
-                    if (!Directory.Exists(leftArrowClassPath))
-                    {
-                        Directory.CreateDirectory(leftArrowClassPath);
-                    }
-                    if (!Directory.Exists(rightArrowClassPath))
-                    {
-                        Directory.CreateDirectory(rightArrowClassPath);
+                        Directory.CreateDirectory(Path.Combine(config.SourceFolder, resultsFolder));
                     }
 
-                    var destinationPath = leftArrowClassPath;
-                    ListView lv = lvLeftArrowKey;
+                    var destinationFilePath = string.Empty;
+                    var destinationFileName = string.Empty;
+                    var sourceFilePath = string.Empty;
+                    var classfiedFolderPath = string.Empty;
+                    ListView? lvClassified = null;
                     switch (keyData)
                     {
+                        case Keys.Left:
+                            if (isSourceEmpty())
+                            {
+                                return true;
+                            }
+                            lvClassified = lvLeftArrowKey;
+                            PrepareLeftRightActions(
+                                out sourceFilePath,
+                                out classfiedFolderPath,
+                                out destinationFilePath,
+                                out destinationFileName,
+                                config.LeftArrowClassName,
+                                lvLeftArrowKey);
+                            break;
                         case Keys.Right:
-                            destinationPath = rightArrowClassPath;
-                            lv = lvRightArrowKey;
+                            if (isSourceEmpty())
+                            {
+                                return true;
+                            }
+                            lvClassified = lvRightArrowKey;
+                            PrepareLeftRightActions(
+                                out sourceFilePath,
+                                out classfiedFolderPath,
+                                out destinationFilePath,
+                                out destinationFileName,
+                                config.RightArrowClass,
+                                lvRightArrowKey);
+                            break;
+                        case Keys.Down: /* Skip */
+                            if (isSourceEmpty())
+                            {
+                                return true;
+                            }
+                            PrepareLeftRightActions(
+                                out sourceFilePath,
+                                out classfiedFolderPath,
+                                out destinationFilePath,
+                                out destinationFileName,
+                                unknownFolder,
+                                null);
+                            break;
+                        case Keys.Up: /* Undo */
+                            if (string.IsNullOrWhiteSpace(lastDestinationFilePath))
+                            {
+                                MessageBox.Show("Can't undo", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                return true;
+                            }
+                            sourceFilePath = lastDestinationFilePath;
+                            lvClassified = lastLvClassified;
+                            classfiedFolderPath = lastDestinationFolderPath;
+                            destinationFilePath = Path.Combine(config.SourceFolder, lastDestinationFileName);
+
+                            lastDestinationFileName = string.Empty;
+                            lastDestinationFilePath = string.Empty;
+                            lastDestinationFolderPath = string.Empty;
+                            lastLvClassified = null;
                             break;
                     }
 
-                    if (lvSource.SelectedItems.Count > 0)
-                    {
-                        var sourcePath = Path.Combine(Config.SourceFolder, lvSource.SelectedItems[0].Text);
-                        var destPath = Path.Combine(destinationPath, lvSource.SelectedItems[0].Text);
-                        picImage.Image.Dispose();
-                        picImage.Image = null;
-                        File.Move(sourcePath, destPath);
-                        lvSource.Items.RemoveAt(lvSource.SelectedItems[0].Index);
-                        LoadClassifiedFilesList(destinationPath, lv);
-                        LoadSourceFilesList();
-                    }
+                    picImage.Image?.Dispose();
+                    picImage.Image = null;
+                    File.Move(sourceFilePath, destinationFilePath);
+                    LoadClassifiedFilesList(classfiedFolderPath, lvClassified);
+                    LoadSourceFilesList();
                 }
                 catch (Exception ex)
                 {
