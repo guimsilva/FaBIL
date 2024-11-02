@@ -55,22 +55,22 @@ namespace FastImageClassifier
             lvSource.View = View.Details;
             lvSource.FullRowSelect = true;
             lvSource.GridLines = true;
-            lvSource.Columns.Add("Name", 300);
-            lvSource.Columns.Add("Date Modified", 115);
+            lvSource.Columns.Add("Name", 308);
+            lvSource.Columns.Add("Last Accessed", 126);
             LoadSourceFilesList(loadImage: false);
 
             lvLeftArrowKey.View = View.Details;
             lvLeftArrowKey.FullRowSelect = true;
             lvLeftArrowKey.GridLines = true;
-            lvLeftArrowKey.Columns.Add("Name", 180);
-            lvLeftArrowKey.Columns.Add("Date Modified", 90);
+            lvLeftArrowKey.Columns.Add("Name", 177);
+            lvLeftArrowKey.Columns.Add("Last Accessed", 126);
             LoadClassifiedFilesList(Path.Combine(config.SourceFolder, resultsFolder, config.LeftArrowClassName), lvLeftArrowKey);
 
             lvRightArrowKey.View = View.Details;
             lvRightArrowKey.FullRowSelect = true;
             lvRightArrowKey.GridLines = true;
-            lvRightArrowKey.Columns.Add("Name", 180);
-            lvRightArrowKey.Columns.Add("Date Modified", 90);
+            lvRightArrowKey.Columns.Add("Name", 177);
+            lvRightArrowKey.Columns.Add("Last Accessed", 126);
             LoadClassifiedFilesList(Path.Combine(config.SourceFolder, resultsFolder, config.RightArrowClass), lvRightArrowKey);
 
             picImage.SizeMode = PictureBoxSizeMode.Zoom;
@@ -113,7 +113,7 @@ namespace FastImageClassifier
             foreach (var file in files)
             {
                 var item = new ListViewItem(file.Name);
-                item.SubItems.Add(file.LastWriteTime.ToString());
+                item.SubItems.Add(file.LastAccessTime.ToString());
                 lvSource.Items.Add(item);
             }
 
@@ -156,10 +156,12 @@ namespace FastImageClassifier
             foreach (var file in files)
             {
                 var item = new ListViewItem(file.Name);
-                item.SubItems.Add(file.LastWriteTime.ToString());
+                item.SubItems.Add(file.LastAccessTime.ToString());
                 lv.Items.Add(item);
             }
 
+            lvLeftArrowKey.SelectedItems.Clear();
+            lvRightArrowKey.SelectedItems.Clear();
             lv.Sorting = SortOrder.Descending;
             lv.Sort();
             lv.Items[0].Selected = true;
