@@ -29,7 +29,7 @@
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FrmMain));
-            gpbClassesDetails = new GroupBox();
+            gpbSetup = new GroupBox();
             lbInstructions = new Label();
             txtPathSource = new TextBox();
             btnFolderSource = new Button();
@@ -49,28 +49,30 @@
             lbSourceList = new Label();
             lbNegativeImages = new Label();
             lbPositiveImages = new Label();
-            gpbClassesDetails.SuspendLayout();
+            gpbImage = new GroupBox();
+            gpbSetup.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)picImage).BeginInit();
+            gpbImage.SuspendLayout();
             SuspendLayout();
             // 
-            // gpbClassesDetails
+            // gpbSetup
             // 
-            gpbClassesDetails.Controls.Add(lbInstructions);
-            gpbClassesDetails.Controls.Add(txtPathSource);
-            gpbClassesDetails.Controls.Add(btnFolderSource);
-            gpbClassesDetails.Controls.Add(lbSource);
-            gpbClassesDetails.Controls.Add(label2);
-            gpbClassesDetails.Controls.Add(label1);
-            gpbClassesDetails.Controls.Add(lblRightArrow);
-            gpbClassesDetails.Controls.Add(lblLeftArrow);
-            gpbClassesDetails.Controls.Add(txtRightArrowClass);
-            gpbClassesDetails.Controls.Add(txtLeftArrowClass);
-            gpbClassesDetails.Location = new Point(12, 12);
-            gpbClassesDetails.Name = "gpbClassesDetails";
-            gpbClassesDetails.Size = new Size(439, 346);
-            gpbClassesDetails.TabIndex = 0;
-            gpbClassesDetails.TabStop = false;
-            gpbClassesDetails.Text = "Classes Details";
+            gpbSetup.Controls.Add(lbInstructions);
+            gpbSetup.Controls.Add(txtPathSource);
+            gpbSetup.Controls.Add(btnFolderSource);
+            gpbSetup.Controls.Add(lbSource);
+            gpbSetup.Controls.Add(label2);
+            gpbSetup.Controls.Add(label1);
+            gpbSetup.Controls.Add(lblRightArrow);
+            gpbSetup.Controls.Add(lblLeftArrow);
+            gpbSetup.Controls.Add(txtRightArrowClass);
+            gpbSetup.Controls.Add(txtLeftArrowClass);
+            gpbSetup.Location = new Point(12, 12);
+            gpbSetup.Name = "gpbSetup";
+            gpbSetup.Size = new Size(439, 407);
+            gpbSetup.TabIndex = 0;
+            gpbSetup.TabStop = false;
+            gpbSetup.Text = "Setup";
             // 
             // lbInstructions
             // 
@@ -151,6 +153,7 @@
             txtRightArrowClass.Size = new Size(254, 23);
             txtRightArrowClass.TabIndex = 3;
             txtRightArrowClass.Text = "Positive";
+            txtRightArrowClass.TextChanged += txtRightArrowClass_TextChanged;
             // 
             // txtLeftArrowClass
             // 
@@ -163,16 +166,16 @@
             // 
             // picImage
             // 
-            picImage.Location = new Point(457, 12);
+            picImage.Location = new Point(6, 22);
             picImage.Name = "picImage";
-            picImage.Size = new Size(594, 420);
+            picImage.Size = new Size(582, 379);
             picImage.TabIndex = 1;
             picImage.TabStop = false;
             // 
             // btnStart
             // 
             btnStart.Font = new Font("Segoe UI", 12F);
-            btnStart.Location = new Point(12, 619);
+            btnStart.Location = new Point(10, 676);
             btnStart.Name = "btnStart";
             btnStart.Size = new Size(439, 55);
             btnStart.TabIndex = 2;
@@ -183,7 +186,7 @@
             // lvSource
             // 
             lvSource.Enabled = false;
-            lvSource.Location = new Point(12, 383);
+            lvSource.Location = new Point(10, 440);
             lvSource.Name = "lvSource";
             lvSource.Size = new Size(439, 230);
             lvSource.TabIndex = 3;
@@ -192,25 +195,25 @@
             // lvLeftArrowKey
             // 
             lvLeftArrowKey.Enabled = false;
-            lvLeftArrowKey.Location = new Point(459, 457);
+            lvLeftArrowKey.Location = new Point(457, 440);
             lvLeftArrowKey.Name = "lvLeftArrowKey";
-            lvLeftArrowKey.Size = new Size(293, 217);
+            lvLeftArrowKey.Size = new Size(293, 291);
             lvLeftArrowKey.TabIndex = 4;
             lvLeftArrowKey.UseCompatibleStateImageBehavior = false;
             // 
             // lvRightArrowKey
             // 
             lvRightArrowKey.Enabled = false;
-            lvRightArrowKey.Location = new Point(758, 457);
+            lvRightArrowKey.Location = new Point(758, 440);
             lvRightArrowKey.Name = "lvRightArrowKey";
-            lvRightArrowKey.Size = new Size(293, 217);
+            lvRightArrowKey.Size = new Size(293, 291);
             lvRightArrowKey.TabIndex = 5;
             lvRightArrowKey.UseCompatibleStateImageBehavior = false;
             // 
             // lbSourceList
             // 
             lbSourceList.AutoSize = true;
-            lbSourceList.Location = new Point(12, 365);
+            lbSourceList.Location = new Point(10, 422);
             lbSourceList.Name = "lbSourceList";
             lbSourceList.Size = new Size(43, 15);
             lbSourceList.TabIndex = 6;
@@ -219,7 +222,7 @@
             // lbNegativeImages
             // 
             lbNegativeImages.AutoSize = true;
-            lbNegativeImages.Location = new Point(459, 439);
+            lbNegativeImages.Location = new Point(457, 422);
             lbNegativeImages.Name = "lbNegativeImages";
             lbNegativeImages.Size = new Size(54, 15);
             lbNegativeImages.TabIndex = 7;
@@ -228,17 +231,28 @@
             // lbPositiveImages
             // 
             lbPositiveImages.AutoSize = true;
-            lbPositiveImages.Location = new Point(758, 439);
+            lbPositiveImages.Location = new Point(758, 422);
             lbPositiveImages.Name = "lbPositiveImages";
             lbPositiveImages.Size = new Size(48, 15);
             lbPositiveImages.TabIndex = 8;
             lbPositiveImages.Text = "Positive";
             // 
+            // gpbImage
+            // 
+            gpbImage.Controls.Add(picImage);
+            gpbImage.Location = new Point(457, 12);
+            gpbImage.Name = "gpbImage";
+            gpbImage.Size = new Size(594, 407);
+            gpbImage.TabIndex = 9;
+            gpbImage.TabStop = false;
+            gpbImage.Text = "Image";
+            // 
             // FrmMain
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(1063, 687);
+            ClientSize = new Size(1063, 743);
+            Controls.Add(gpbImage);
             Controls.Add(lbPositiveImages);
             Controls.Add(lbNegativeImages);
             Controls.Add(lbSourceList);
@@ -246,21 +260,21 @@
             Controls.Add(lvLeftArrowKey);
             Controls.Add(lvSource);
             Controls.Add(btnStart);
-            Controls.Add(picImage);
-            Controls.Add(gpbClassesDetails);
+            Controls.Add(gpbSetup);
             Name = "FrmMain";
             StartPosition = FormStartPosition.CenterScreen;
             Text = "Fast Image Classifier";
-            gpbClassesDetails.ResumeLayout(false);
-            gpbClassesDetails.PerformLayout();
+            gpbSetup.ResumeLayout(false);
+            gpbSetup.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)picImage).EndInit();
+            gpbImage.ResumeLayout(false);
             ResumeLayout(false);
             PerformLayout();
         }
 
         #endregion
 
-        private GroupBox gpbClassesDetails;
+        private GroupBox gpbSetup;
         private Label lblLeftArrow;
         private TextBox txtLeftArrowClass;
         private Label lblRightArrow;
@@ -280,5 +294,6 @@
         private Label lbSourceList;
         private Label lbNegativeImages;
         private Label lbPositiveImages;
+        private GroupBox gpbImage;
     }
 }
