@@ -121,9 +121,9 @@
     <value>A folder for each class name will be created under
 "/&lt;images source folder&gt;/Results/" if it doesn't already exist.
 
-To skip an image, use the "down arrow key" to move to the next one, which will cause the current image to be moved to the "/Results/Unknown" folder.
+To skip an image, use either up or down arrow keys to move to the next image, which will cause the current one to be moved to the "/Results/Unknown" folder.
 
-Use the "up arrow key" to undo the previous action.</value>
+Press key "z" to undo the previous action.</value>
   </data>
   <metadata name="foderDestination.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>17, 17</value>

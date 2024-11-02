@@ -79,18 +79,18 @@
             // lbStatus
             // 
             lbStatus.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
-            lbStatus.Location = new Point(6, 327);
+            lbStatus.Location = new Point(6, 350);
             lbStatus.Name = "lbStatus";
-            lbStatus.Size = new Size(427, 74);
+            lbStatus.Size = new Size(427, 51);
             lbStatus.TabIndex = 12;
             lbStatus.TextAlign = ContentAlignment.MiddleCenter;
             lbStatus.Visible = false;
             // 
             // lbInstructions
             // 
-            lbInstructions.Location = new Point(6, 218);
+            lbInstructions.Location = new Point(6, 215);
             lbInstructions.Name = "lbInstructions";
-            lbInstructions.Size = new Size(427, 119);
+            lbInstructions.Size = new Size(427, 125);
             lbInstructions.TabIndex = 11;
             lbInstructions.Text = resources.GetString("lbInstructions.Text");
             // 
@@ -193,13 +193,14 @@
             btnStart.Name = "btnStart";
             btnStart.Size = new Size(439, 55);
             btnStart.TabIndex = 4;
-            btnStart.Text = "Start";
+            btnStart.Text = "Start (F5)";
             btnStart.UseVisualStyleBackColor = true;
             btnStart.Click += btnStart_Click;
             // 
             // lvSource
             // 
             lvSource.Enabled = false;
+            lvSource.Font = new Font("Segoe UI", 8F);
             lvSource.Location = new Point(10, 440);
             lvSource.Name = "lvSource";
             lvSource.Size = new Size(439, 230);
@@ -209,6 +210,7 @@
             // lvLeftArrowKey
             // 
             lvLeftArrowKey.Enabled = false;
+            lvLeftArrowKey.Font = new Font("Segoe UI", 8F);
             lvLeftArrowKey.ForeColor = Color.MediumOrchid;
             lvLeftArrowKey.Location = new Point(457, 440);
             lvLeftArrowKey.Name = "lvLeftArrowKey";
@@ -219,6 +221,7 @@
             // lvRightArrowKey
             // 
             lvRightArrowKey.Enabled = false;
+            lvRightArrowKey.Font = new Font("Segoe UI", 8F);
             lvRightArrowKey.ForeColor = Color.SlateBlue;
             lvRightArrowKey.Location = new Point(758, 440);
             lvRightArrowKey.Name = "lvRightArrowKey";

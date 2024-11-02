@@ -1,3 +1,4 @@
+using System.Diagnostics.Eventing.Reader;
 using System.Text.Json;
 
 namespace FastImageClassifier
@@ -118,12 +119,23 @@ namespace FastImageClassifier
                 lvSource.Items.Add(item);
             }
 
-            lbStatus.Visible = lvSource.Items.Count > 0;
-            btnStart.Enabled = lvSource.Items.Count > 0;
-            isClassifying = isClassifying && lvSource.Items.Count > 0;
-            if (loadImage)
+            if (lvSource.Items.Count > 0)
             {
-                LoadImage();
+                lbStatus.Visible = true;
+                btnStart.Enabled = true;
+                if (loadImage)
+                {
+                    LoadImage();
+                }
+            }
+            else
+            {
+                lbStatus.Visible = false;
+                btnStart.Enabled = false;
+                if (isClassifying)
+                {
+                    Stop();
+                }
             }
         }
 
@@ -138,12 +150,21 @@ namespace FastImageClassifier
             var files = this.imagesFileFilter.SelectMany(f => Directory.GetFiles(folderPath, f))
                                              .Select(f => new FileInfo(f));
 
+            if (files is null || files.Count() == 0)
+            {
+                return;
+            }
+
             foreach (var file in files)
             {
                 var item = new ListViewItem(file.Name);
                 item.SubItems.Add(file.LastWriteTime.ToString());
                 lv.Items.Add(item);
             }
+
+            lv.Sorting = SortOrder.Descending;
+            lv.Sort();
+            lv.Items[0].Selected = true;
         }
 
         private void btnFolderSource_Click(object? sender, EventArgs e)
@@ -160,46 +181,65 @@ namespace FastImageClassifier
             }
         }
 
+        private void Start()
+        {
+            if (lvSource.Items.Count == 0)
+            {
+                MessageBox.Show("No images to classify", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+            isClassifying = true;
+            txtLeftArrowClass.Enabled = false;
+            txtRightArrowClass.Enabled = false;
+            txtPathSource.Enabled = false;
+            btnFolderSource.Enabled = false;
+            btnStart.Text = "Stop (ESC)";
+            lbStatus.Text = statusTextOn;
+            LoadImage();
+            if (!Directory.Exists(Path.Combine(config.SourceFolder, resultsFolder)))
+            {
+                Directory.CreateDirectory(Path.Combine(config.SourceFolder, resultsFolder));
+            }
+            if (!Directory.Exists(GetClassifiedFolderPath(config.LeftArrowClassName)))
+            {
+                Directory.CreateDirectory(GetClassifiedFolderPath(config.LeftArrowClassName));
+            }
+            if (!Directory.Exists(GetClassifiedFolderPath(config.RightArrowClass)))
+            {
+                Directory.CreateDirectory(GetClassifiedFolderPath(config.RightArrowClass));
+            }
+            if (!Directory.Exists(GetClassifiedFolderPath(unknownFolder)))
+            {
+                Directory.CreateDirectory(GetClassifiedFolderPath(unknownFolder));
+            }
+        }
+
+        private void Stop()
+        {
+            isClassifying = false;
+            txtLeftArrowClass.Enabled = true;
+            txtRightArrowClass.Enabled = true;
+            txtPathSource.Enabled = true;
+            btnFolderSource.Enabled = true;
+            btnStart.Text = "Start (F5)";
+            lbStatus.Text = statusTextOff;
+            if (picImage.Image != null)
+            {
+                picImage.Image.Dispose();
+                picImage.Image = null;
+            }
+            lvSource.SelectedItems.Clear();
+        }
+
         private void btnStart_Click(object sender, EventArgs e)
         {
             if (isClassifying)
             {
-                isClassifying = false;
-                txtLeftArrowClass.Enabled = true;
-                txtRightArrowClass.Enabled = true;
-                txtPathSource.Enabled = true;
-                btnFolderSource.Enabled = true;
-                btnStart.Text = "Start";
-                lbStatus.Text = statusTextOff;
-                picImage.Image = null;
-                lvSource.SelectedItems.Clear();
+                Stop();
             }
             else
             {
-                isClassifying = true;
-                txtLeftArrowClass.Enabled = false;
-                txtRightArrowClass.Enabled = false;
-                txtPathSource.Enabled = false;
-                btnFolderSource.Enabled = false;
-                btnStart.Text = "Stop";
-                lbStatus.Text = statusTextOn;
-                LoadImage();
-                if (!Directory.Exists(Path.Combine(config.SourceFolder, resultsFolder)))
-                {
-                    Directory.CreateDirectory(Path.Combine(config.SourceFolder, resultsFolder));
-                }
-                if (!Directory.Exists(GetClassifiedFolderPath(config.LeftArrowClassName)))
-                {
-                    Directory.CreateDirectory(GetClassifiedFolderPath(config.LeftArrowClassName));
-                }
-                if (!Directory.Exists(GetClassifiedFolderPath(config.RightArrowClass)))
-                {
-                    Directory.CreateDirectory(GetClassifiedFolderPath(config.RightArrowClass));
-                }
-                if (!Directory.Exists(GetClassifiedFolderPath(unknownFolder)))
-                {
-                    Directory.CreateDirectory(GetClassifiedFolderPath(unknownFolder));
-                }
+                Start();
             }
         }
 
@@ -250,7 +290,8 @@ namespace FastImageClassifier
                 if (!(keyData == Keys.Up ||
                         keyData == Keys.Right ||
                         keyData == Keys.Down ||
-                        keyData == Keys.Left))
+                        keyData == Keys.Left ||
+                        keyData == Keys.Z))
                 {
                     return true;
                 }
@@ -290,6 +331,7 @@ namespace FastImageClassifier
                             config.RightArrowClass,
                             lvRightArrowKey);
                         break;
+                    case Keys.Up:/* Skip - Unknown */
                     case Keys.Down: /* Skip - Unknown */
                         if (isSourceEmpty())
                         {
@@ -303,7 +345,7 @@ namespace FastImageClassifier
                             unknownFolder,
                             null);
                         break;
-                    case Keys.Up: /* Undo - only last Left/Right/Down key - it doesn't have a full history atm */
+                    case Keys.Z: /* Undo - only last Left/Right/Down key - it doesn't have a full history atm */
                         if (string.IsNullOrWhiteSpace(lastDestinationFilePath))
                         {
                             MessageBox.Show("Can't undo", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -319,6 +361,8 @@ namespace FastImageClassifier
                         lastDestinationFolderPath = string.Empty;
                         lastLvClassified = null;
                         break;
+                    default:
+                        return true;
                 }
 
                 picImage.Image?.Dispose();
@@ -338,10 +382,18 @@ namespace FastImageClassifier
         {
             if (isClassifying)
             {
+                if (keyData == Keys.Escape)
+                {
+                    Stop();
+                    return true;
+                }
                 return Classify(keyData);
             }
-
-            return false;
+            else if (keyData == Keys.F5)
+            {
+                Start();
+            }
+            return true;
         }
     }
 }
