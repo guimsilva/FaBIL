@@ -30,6 +30,7 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FrmMain));
             gpbSetup = new GroupBox();
+            lbStatus = new Label();
             lbInstructions = new Label();
             txtPathSource = new TextBox();
             btnFolderSource = new Button();
@@ -57,6 +58,7 @@
             // 
             // gpbSetup
             // 
+            gpbSetup.Controls.Add(lbStatus);
             gpbSetup.Controls.Add(lbInstructions);
             gpbSetup.Controls.Add(txtPathSource);
             gpbSetup.Controls.Add(btnFolderSource);
@@ -73,6 +75,16 @@
             gpbSetup.TabIndex = 0;
             gpbSetup.TabStop = false;
             gpbSetup.Text = "Setup";
+            // 
+            // lbStatus
+            // 
+            lbStatus.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
+            lbStatus.Location = new Point(6, 327);
+            lbStatus.Name = "lbStatus";
+            lbStatus.Size = new Size(427, 74);
+            lbStatus.TabIndex = 12;
+            lbStatus.TextAlign = ContentAlignment.MiddleCenter;
+            lbStatus.Visible = false;
             // 
             // lbInstructions
             // 
@@ -196,6 +208,7 @@
             // lvLeftArrowKey
             // 
             lvLeftArrowKey.Enabled = false;
+            lvLeftArrowKey.ForeColor = Color.MediumOrchid;
             lvLeftArrowKey.Location = new Point(457, 440);
             lvLeftArrowKey.Name = "lvLeftArrowKey";
             lvLeftArrowKey.Size = new Size(293, 291);
@@ -205,6 +218,7 @@
             // lvRightArrowKey
             // 
             lvRightArrowKey.Enabled = false;
+            lvRightArrowKey.ForeColor = Color.SlateBlue;
             lvRightArrowKey.Location = new Point(758, 440);
             lvRightArrowKey.Name = "lvRightArrowKey";
             lvRightArrowKey.Size = new Size(293, 291);
@@ -223,18 +237,22 @@
             // lbNegativeImages
             // 
             lbNegativeImages.AutoSize = true;
+            lbNegativeImages.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
+            lbNegativeImages.ForeColor = Color.MediumOrchid;
             lbNegativeImages.Location = new Point(457, 422);
             lbNegativeImages.Name = "lbNegativeImages";
-            lbNegativeImages.Size = new Size(54, 15);
+            lbNegativeImages.Size = new Size(58, 15);
             lbNegativeImages.TabIndex = 7;
             lbNegativeImages.Text = "Negative";
             // 
             // lbPositiveImages
             // 
             lbPositiveImages.AutoSize = true;
+            lbPositiveImages.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
+            lbPositiveImages.ForeColor = Color.SlateBlue;
             lbPositiveImages.Location = new Point(758, 422);
             lbPositiveImages.Name = "lbPositiveImages";
-            lbPositiveImages.Size = new Size(48, 15);
+            lbPositiveImages.Size = new Size(51, 15);
             lbPositiveImages.TabIndex = 8;
             lbPositiveImages.Text = "Positive";
             // 
@@ -296,5 +314,6 @@
         private Label lbNegativeImages;
         private Label lbPositiveImages;
         private GroupBox gpbImage;
+        private Label lbStatus;
     }
 }
