@@ -12,7 +12,7 @@ Using arrow keys to label images is faster and more intuitive than using a mouse
 
 - **Simple**: The application is designed to be simple and easy to use so you can go straight to the point and start lebelling images immediately.
 - **Local State Persistence**: The application remembers the source and destination folders, so you can continue where you left off.
-- **Fluid** Resize the window for a better view.
+- **Fluid**: Resize the window for a better view.
 
 ## How to Use
 
