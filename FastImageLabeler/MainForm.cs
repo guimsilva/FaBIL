@@ -2,9 +2,9 @@ using System.Text.Json;
 
 namespace FastImageLabeler
 {
-    public partial class FrmMain : Form
+    public partial class MainForm : Form
     {
-        public FrmMain()
+        public MainForm()
         {
             InitializeComponent();
             this.Load += new EventHandler(FrmMain_Load);
