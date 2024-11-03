@@ -81,7 +81,7 @@
             gpbSetup.Controls.Add(txtLeftArrowClass);
             gpbSetup.Location = new Point(13, 13);
             gpbSetup.Name = "gpbSetup";
-            gpbSetup.Size = new Size(438, 401);
+            gpbSetup.Size = new Size(444, 401);
             gpbSetup.TabIndex = 0;
             gpbSetup.TabStop = false;
             gpbSetup.Text = "Setup";
@@ -192,7 +192,7 @@
             picImage.Dock = DockStyle.Fill;
             picImage.Location = new Point(3, 19);
             picImage.Name = "picImage";
-            picImage.Size = new Size(634, 379);
+            picImage.Size = new Size(630, 370);
             picImage.TabIndex = 1;
             picImage.TabStop = false;
             // 
@@ -202,7 +202,7 @@
             btnStart.Font = new Font("Segoe UI", 12F);
             btnStart.Location = new Point(0, 180);
             btnStart.Name = "btnStart";
-            btnStart.Size = new Size(438, 55);
+            btnStart.Size = new Size(444, 55);
             btnStart.TabIndex = 4;
             btnStart.Text = "Start (F5)";
             btnStart.UseVisualStyleBackColor = true;
@@ -214,7 +214,7 @@
             lvSource.Font = new Font("Segoe UI", 8F);
             lvSource.Location = new Point(0, 24);
             lvSource.Name = "lvSource";
-            lvSource.Size = new Size(438, 141);
+            lvSource.Size = new Size(444, 141);
             lvSource.TabIndex = 3;
             lvSource.UseCompatibleStateImageBehavior = false;
             // 
@@ -225,7 +225,7 @@
             lvLeftArrowKey.ForeColor = Color.MediumOrchid;
             lvLeftArrowKey.Location = new Point(0, 24);
             lvLeftArrowKey.Name = "lvLeftArrowKey";
-            lvLeftArrowKey.Size = new Size(307, 210);
+            lvLeftArrowKey.Size = new Size(310, 210);
             lvLeftArrowKey.TabIndex = 4;
             lvLeftArrowKey.UseCompatibleStateImageBehavior = false;
             // 
@@ -236,7 +236,7 @@
             lvRightArrowKey.ForeColor = Color.SlateBlue;
             lvRightArrowKey.Location = new Point(0, 24);
             lvRightArrowKey.Name = "lvRightArrowKey";
-            lvRightArrowKey.Size = new Size(307, 210);
+            lvRightArrowKey.Size = new Size(310, 210);
             lvRightArrowKey.TabIndex = 5;
             lvRightArrowKey.UseCompatibleStateImageBehavior = false;
             // 
@@ -277,9 +277,11 @@
             gpbImage.AutoSizeMode = AutoSizeMode.GrowAndShrink;
             gpbImage.Controls.Add(picImage);
             gpbImage.Dock = DockStyle.Fill;
-            gpbImage.Location = new Point(463, 13);
+            gpbImage.Location = new Point(467, 13);
+            gpbImage.Margin = new Padding(7, 3, 3, 3);
             gpbImage.Name = "gpbImage";
-            gpbImage.Size = new Size(640, 401);
+            gpbImage.Padding = new Padding(3, 3, 3, 12);
+            gpbImage.Size = new Size(636, 401);
             gpbImage.TabIndex = 9;
             gpbImage.TabStop = false;
             gpbImage.Text = "Image";
@@ -323,6 +325,7 @@
             pnlClassified.Controls.Add(pnlClassifiedLeft);
             pnlClassified.Location = new Point(463, 420);
             pnlClassified.Name = "pnlClassified";
+            pnlClassified.Padding = new Padding(2, 0, 0, 0);
             pnlClassified.Size = new Size(640, 235);
             pnlClassified.TabIndex = 1;
             // 
@@ -341,7 +344,7 @@
             pnlClassifiedLeft.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
             pnlClassifiedLeft.Controls.Add(lvLeftArrowKey);
             pnlClassifiedLeft.Controls.Add(lbNegativeImages);
-            pnlClassifiedLeft.Location = new Point(3, 0);
+            pnlClassifiedLeft.Location = new Point(5, 0);
             pnlClassifiedLeft.Name = "pnlClassifiedLeft";
             pnlClassifiedLeft.Size = new Size(310, 236);
             pnlClassifiedLeft.TabIndex = 0;

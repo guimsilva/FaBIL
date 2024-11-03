@@ -54,21 +54,21 @@ namespace FastImageClassifier
             lvSource.View = View.Details;
             lvSource.FullRowSelect = true;
             lvSource.GridLines = true;
-            lvSource.Columns.Add("Name", 308);
+            lvSource.Columns.Add("Name", 314);
             lvSource.Columns.Add("Last Accessed", 126);
             LoadSourceFilesList(loadImage: false);
 
             lvLeftArrowKey.View = View.Details;
             lvLeftArrowKey.FullRowSelect = true;
             lvLeftArrowKey.GridLines = true;
-            lvLeftArrowKey.Columns.Add("Name", 177);
+            lvLeftArrowKey.Columns.Add("Name", 180);
             lvLeftArrowKey.Columns.Add("Last Accessed", 126);
             LoadClassifiedFilesList(Path.Combine(config.SourceFolder, resultsFolder, config.LeftArrowClassName), lvLeftArrowKey);
 
             lvRightArrowKey.View = View.Details;
             lvRightArrowKey.FullRowSelect = true;
             lvRightArrowKey.GridLines = true;
-            lvRightArrowKey.Columns.Add("Name", 177);
+            lvRightArrowKey.Columns.Add("Name", 180);
             lvRightArrowKey.Columns.Add("Last Accessed", 126);
             LoadClassifiedFilesList(Path.Combine(config.SourceFolder, resultsFolder, config.RightArrowClass), lvRightArrowKey);
 
