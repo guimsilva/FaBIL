@@ -451,6 +451,20 @@ namespace FastImageLabeler
             return true;
         }
 
+        private void txtLeftArrowLabel_Leave(object sender, EventArgs e)
+        {
+            lbNegativeImages.Text = txtLeftArrowLabel.Text.Trim().Replace(" ", "");
+            WriteConfig();
+            LoadLabeledFilesList(GetLabeledFolderPath(config.LeftArrowLabelName), lvLeftArrowKey);
+        }
+
+        private void txtRightArrowLabel_Leave(object sender, EventArgs e)
+        {
+            lbPositiveImages.Text = txtRightArrowLabel.Text.Trim().Replace(" ", "");
+            WriteConfig();
+            LoadLabeledFilesList(GetLabeledFolderPath(config.RightArrowLabelName), lvRightArrowKey);
+        }
+
         private bool KeyPressHandler(Keys keyData)
         {
             if (isLabeling)
@@ -464,6 +478,14 @@ namespace FastImageLabeler
             }
             else if (keyData == Keys.F5)
             {
+                if (txtLeftArrowLabel.Focused)
+                {
+                    txtLeftArrowLabel_Leave(new object(), new EventArgs());
+                }
+                else if (txtRightArrowLabel.Focused)
+                {
+                    txtRightArrowLabel_Leave(new object(), new EventArgs());
+                }
                 Start();
             }
             return false;

@@ -178,7 +178,7 @@
             txtRightArrowLabel.Size = new Size(254, 23);
             txtRightArrowLabel.TabIndex = 2;
             txtRightArrowLabel.Text = "Positive";
-            txtRightArrowLabel.TextChanged += txtRightArrowLabel_TextChanged;
+            txtRightArrowLabel.Leave += txtRightArrowLabel_Leave;
             // 
             // txtLeftArrowLabel
             // 
@@ -187,7 +187,7 @@
             txtLeftArrowLabel.Size = new Size(254, 23);
             txtLeftArrowLabel.TabIndex = 1;
             txtLeftArrowLabel.Text = "Negative";
-            txtLeftArrowLabel.TextChanged += txtLeftArrowLabel_TextChanged;
+            txtLeftArrowLabel.Leave += txtLeftArrowLabel_Leave;
             // 
             // picImage
             // 
@@ -364,13 +364,13 @@
             pnlLabeledRight.Size = new Size(310, 236);
             pnlLabeledRight.TabIndex = 1;
             // 
-            // pnlLabeleddLeft
+            // pnlLabeledLeft
             // 
             pnlLabeledLeft.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
             pnlLabeledLeft.Controls.Add(lvLeftArrowKey);
             pnlLabeledLeft.Controls.Add(lbNegativeImages);
             pnlLabeledLeft.Location = new Point(5, 0);
-            pnlLabeledLeft.Name = "pnlLabeleddLeft";
+            pnlLabeledLeft.Name = "pnlLabeledLeft";
             pnlLabeledLeft.Size = new Size(310, 236);
             pnlLabeledLeft.TabIndex = 0;
             // 
