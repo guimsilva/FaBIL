@@ -380,6 +380,7 @@
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1116, 668);
             Controls.Add(tableLayoutPanel1);
+            Icon = (Icon)resources.GetObject("$this.Icon");
             Name = "FrmMain";
             StartPosition = FormStartPosition.CenterScreen;
             Text = "Fast Binary Image Classifier";
