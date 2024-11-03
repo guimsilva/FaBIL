@@ -2,7 +2,7 @@
 
 Fast Binary Image Labeler is a free .NET 8 application designed to provide simple and fast binary image labeling.
 
-![Screenshot](FastImageLabeler/assets/Screenshot.png)
+![Screenshot](FastImageLabeler/Assets/Screenshot.png)
 
 ## Features
 
