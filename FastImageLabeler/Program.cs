@@ -1,4 +1,4 @@
-namespace FastImageClassifier
+namespace FastImageLabeler
 {
     internal static class Program
     {

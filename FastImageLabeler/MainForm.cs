@@ -1,7 +1,6 @@
-using System.Diagnostics.Eventing.Reader;
 using System.Text.Json;
 
-namespace FastImageClassifier
+namespace FastImageLabeler
 {
     public partial class FrmMain : Form
     {
@@ -11,20 +10,24 @@ namespace FastImageClassifier
             this.Load += new EventHandler(FrmMain_Load);
         }
 
-        private readonly string statusTextOff = "Click \"Start\" to start classifying your images";
-        private readonly string statusTextOn = "Use your arrow keys to classify the images or click \"Stop\"";
+        private readonly string statusTextOff = "Click \"Start\" to start labeling your images";
+        private readonly string statusTextOn = "Use your arrow keys to label the images or click \"Stop\"";
         private readonly string configPath = "Config.json";
         private readonly List<string> imagesFileFilter = new List<string> { "*.jpg", "*.jpeg", "*.png", "*.gif" };
         private readonly string resultsFolder = "Results";
         private readonly string unknownFolder = "Unknown";
+        private readonly string remainingInBatch = "Remaining in batch: ";
+        private readonly string remainingInFolder = "Remaining in folder: ";
 
         private Config config { get; set; } = new Config();
         private bool canWriteConfig = false;
-        private bool isClassifying = false;
+        private bool isLabeling = false;
         private string lastDestinationFolderPath = string.Empty;
         private string lastDestinationFilePath = string.Empty;
         private string lastDestinationFileName = string.Empty;
-        private ListView? lastLvClassified = null;
+        private ListView? lastLvLabeled = null;
+        private int remainingInBatchCount = 0;
+        private int remainingInFolderCount = 0;
 
         protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
         {
@@ -34,6 +37,16 @@ namespace FastImageClassifier
             }
             return base.ProcessCmdKey(ref msg, keyData);
         }
+
+        protected string LeftLblLabel =>
+            lvLeftArrowKey.Items.Count > 0
+                ? $"{config.LeftArrowLabelName} ({lvLeftArrowKey.Items.Count})"
+                : config.LeftArrowLabelName;
+
+        protected string RightLblLabel =>
+            lvRightArrowKey.Items.Count > 0
+                ? $"{config.RightArrowLabelName} ({lvRightArrowKey.Items.Count})"
+                : config.RightArrowLabelName;
 
         private void FrmMain_Load(object? sender, EventArgs e)
         {
@@ -47,32 +60,31 @@ namespace FastImageClassifier
             }
 
             txtPathSource.Text = config.SourceFolder;
-            lbNegativeImages.Text = txtLeftArrowClass.Text = config.LeftArrowClassName;
-            lbPositiveImages.Text = txtRightArrowClass.Text = config.RightArrowClass;
+            lbNegativeImages.Text = txtLeftArrowLabel.Text = config.LeftArrowLabelName;
+            lbPositiveImages.Text = txtRightArrowLabel.Text = config.RightArrowLabelName;
             lbStatus.Text = statusTextOff;
             canWriteConfig = true;
 
             lvSource.View = View.Details;
             lvSource.FullRowSelect = true;
             lvSource.GridLines = true;
-            lvSource.Columns.Add("Name", 220);
-            lvSource.Columns.Add("Size", 80);
-            lvSource.Columns.Add("Date Modified", 135);
+            lvSource.Columns.Add("Name", 314);
+            lvSource.Columns.Add("Last Accessed", 126);
             LoadSourceFilesList(loadImage: false);
 
             lvLeftArrowKey.View = View.Details;
             lvLeftArrowKey.FullRowSelect = true;
             lvLeftArrowKey.GridLines = true;
-            lvLeftArrowKey.Columns.Add("Name", 200);
-            lvLeftArrowKey.Columns.Add("Date Modified", 93);
-            LoadClassifiedFilesList(Path.Combine(config.SourceFolder, resultsFolder, config.LeftArrowClassName), lvLeftArrowKey);
+            lvLeftArrowKey.Columns.Add("Name", 180);
+            lvLeftArrowKey.Columns.Add("Last Accessed", 126);
+            LoadLabeledFilesList(Path.Combine(config.SourceFolder, resultsFolder, config.LeftArrowLabelName), lvLeftArrowKey);
 
             lvRightArrowKey.View = View.Details;
             lvRightArrowKey.FullRowSelect = true;
             lvRightArrowKey.GridLines = true;
-            lvRightArrowKey.Columns.Add("Name", 200);
-            lvRightArrowKey.Columns.Add("Date Modified", 93);
-            LoadClassifiedFilesList(Path.Combine(config.SourceFolder, resultsFolder, config.RightArrowClass), lvRightArrowKey);
+            lvRightArrowKey.Columns.Add("Name", 180);
+            lvRightArrowKey.Columns.Add("Last Accessed", 126);
+            LoadLabeledFilesList(Path.Combine(config.SourceFolder, resultsFolder, config.RightArrowLabelName), lvRightArrowKey);
 
             picImage.SizeMode = PictureBoxSizeMode.Zoom;
         }
@@ -86,38 +98,64 @@ namespace FastImageClassifier
             }
             else
             {
-                picImage.Image = Image.FromFile(imagePath);
+                using (FileStream fileStream = new FileStream(imagePath, FileMode.Open, FileAccess.Read))
+                {
+                    using (Image image = Image.FromStream(fileStream))
+                    {
+                        picImage.Image = new Bitmap(image);
+                    }
+                }
+                lvSource.SelectedItems.Clear();
                 lvSource.Items[0].Selected = true;
             }
         }
 
-        private string GetClassifiedFolderPath(string className)
+        private string GetLabeledFolderPath(string labelName)
         {
-            return Path.Combine(config.SourceFolder, $"{resultsFolder}\\{className}");
+            return Path.Combine(config.SourceFolder, $"{resultsFolder}\\{labelName}");
         }
 
         private void WriteConfig()
         {
             if (!canWriteConfig) return;
             config.SourceFolder = txtPathSource.Text;
-            config.LeftArrowClassName = txtLeftArrowClass.Text.Trim().Replace(" ", "");
-            config.RightArrowClass = txtRightArrowClass.Text.Trim().Replace(" ", "");
+            config.LeftArrowLabelName = txtLeftArrowLabel.Text.Trim().Replace(" ", "");
+            config.RightArrowLabelName = txtRightArrowLabel.Text.Trim().Replace(" ", "");
             File.WriteAllText(configPath, JsonSerializer.Serialize(config));
         }
 
-        private void LoadSourceFilesList(bool loadImage = true)
+        private void LoadSourceFilesList(bool loadImage = true, bool readFiles = true)
         {
-            lvSource.Items.Clear();
-            var files = this.imagesFileFilter.SelectMany(f => Directory.GetFiles(config.SourceFolder, f))
-                                             .Select(f => new FileInfo(f));
-
-            foreach (var file in files)
+            if (readFiles || lvSource.Items.Count == 0)
             {
-                var item = new ListViewItem(file.Name);
-                item.SubItems.Add(file.Length.ToString());
-                item.SubItems.Add(file.LastWriteTime.ToString());
-                lvSource.Items.Add(item);
+                lvSource.Items.Clear();
+                remainingInFolderCount = this.imagesFileFilter.SelectMany(f => Directory.EnumerateFiles(config.SourceFolder, f, new EnumerationOptions()
+                {
+                    RecurseSubdirectories = false,
+                }))
+                    .Count();
+
+                var files = this.imagesFileFilter.SelectMany(f => Directory.EnumerateFiles(config.SourceFolder, f, new EnumerationOptions()
+                {
+                    RecurseSubdirectories = false,
+                })
+                    .OrderBy(f => new FileInfo(f).Name)
+                    .Take(100))
+                    .Select(f => new FileInfo(f));
+
+                remainingInBatchCount = files.Count();
+
+                /* Add to view list only the first 100 files to make it lighter and faster */
+                foreach (var file in files)
+                {
+                    var item = new ListViewItem(file.Name);
+                    item.SubItems.Add(file.LastAccessTime.ToString());
+                    lvSource.Items.Add(item);
+                }
             }
+
+            lblRemainingInBatch.Text = $"{remainingInBatch}{remainingInBatchCount}";
+            lblRemainingInFolder.Text = $"{remainingInFolder}{remainingInFolderCount}";
 
             if (lvSource.Items.Count > 0)
             {
@@ -132,39 +170,56 @@ namespace FastImageClassifier
             {
                 lbStatus.Visible = false;
                 btnStart.Enabled = false;
-                if (isClassifying)
+                if (isLabeling)
                 {
                     Stop();
                 }
             }
         }
 
-        private void LoadClassifiedFilesList(string folderPath, ListView? lv)
+        private void SetLbImagesTexts()
         {
-            if (lv is null || !Directory.Exists(folderPath))
+            lbNegativeImages.Text = LeftLblLabel;
+            lbPositiveImages.Text = RightLblLabel;
+        }
+
+        private void LoadLabeledFilesList(string folderPath, ListView? lv)
+        {
+            if (lv is null)
             {
                 return;
             }
 
             lv.Items.Clear();
+
+            if (!Directory.Exists(folderPath))
+            {
+                SetLbImagesTexts();
+                return;
+            }
+
             var files = this.imagesFileFilter.SelectMany(f => Directory.GetFiles(folderPath, f))
                                              .Select(f => new FileInfo(f));
 
             if (files is null || files.Count() == 0)
             {
+                SetLbImagesTexts();
                 return;
             }
 
             foreach (var file in files)
             {
                 var item = new ListViewItem(file.Name);
-                item.SubItems.Add(file.LastWriteTime.ToString());
+                item.SubItems.Add(file.LastAccessTime.ToString());
                 lv.Items.Add(item);
             }
 
+            lvLeftArrowKey.SelectedItems.Clear();
+            lvRightArrowKey.SelectedItems.Clear();
             lv.Sorting = SortOrder.Descending;
             lv.Sort();
             lv.Items[0].Selected = true;
+            SetLbImagesTexts();
         }
 
         private void btnFolderSource_Click(object? sender, EventArgs e)
@@ -176,21 +231,24 @@ namespace FastImageClassifier
                 {
                     txtPathSource.Text = folderBrowserDialog.SelectedPath;
                     WriteConfig();
-                    LoadSourceFilesList();
+                    LoadSourceFilesList(loadImage: false);
+                    LoadLabeledFilesList(GetLabeledFolderPath(config.LeftArrowLabelName), lvLeftArrowKey);
+                    LoadLabeledFilesList(GetLabeledFolderPath(config.RightArrowLabelName), lvRightArrowKey);
+                    isSourceEmpty();
                 }
             }
         }
 
         private void Start()
         {
-            if (lvSource.Items.Count == 0)
+            LoadSourceFilesList();
+            if (isSourceEmpty())
             {
-                MessageBox.Show("No images to classify", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
             }
-            isClassifying = true;
-            txtLeftArrowClass.Enabled = false;
-            txtRightArrowClass.Enabled = false;
+            isLabeling = true;
+            txtLeftArrowLabel.Enabled = false;
+            txtRightArrowLabel.Enabled = false;
             txtPathSource.Enabled = false;
             btnFolderSource.Enabled = false;
             btnStart.Text = "Stop (ESC)";
@@ -200,25 +258,25 @@ namespace FastImageClassifier
             {
                 Directory.CreateDirectory(Path.Combine(config.SourceFolder, resultsFolder));
             }
-            if (!Directory.Exists(GetClassifiedFolderPath(config.LeftArrowClassName)))
+            if (!Directory.Exists(GetLabeledFolderPath(config.LeftArrowLabelName)))
             {
-                Directory.CreateDirectory(GetClassifiedFolderPath(config.LeftArrowClassName));
+                Directory.CreateDirectory(GetLabeledFolderPath(config.LeftArrowLabelName));
             }
-            if (!Directory.Exists(GetClassifiedFolderPath(config.RightArrowClass)))
+            if (!Directory.Exists(GetLabeledFolderPath(config.RightArrowLabelName)))
             {
-                Directory.CreateDirectory(GetClassifiedFolderPath(config.RightArrowClass));
+                Directory.CreateDirectory(GetLabeledFolderPath(config.RightArrowLabelName));
             }
-            if (!Directory.Exists(GetClassifiedFolderPath(unknownFolder)))
+            if (!Directory.Exists(GetLabeledFolderPath(unknownFolder)))
             {
-                Directory.CreateDirectory(GetClassifiedFolderPath(unknownFolder));
+                Directory.CreateDirectory(GetLabeledFolderPath(unknownFolder));
             }
         }
 
         private void Stop()
         {
-            isClassifying = false;
-            txtLeftArrowClass.Enabled = true;
-            txtRightArrowClass.Enabled = true;
+            isLabeling = false;
+            txtLeftArrowLabel.Enabled = true;
+            txtRightArrowLabel.Enabled = true;
             txtPathSource.Enabled = true;
             btnFolderSource.Enabled = true;
             btnStart.Text = "Start (F5)";
@@ -233,7 +291,7 @@ namespace FastImageClassifier
 
         private void btnStart_Click(object sender, EventArgs e)
         {
-            if (isClassifying)
+            if (isLabeling)
             {
                 Stop();
             }
@@ -243,15 +301,15 @@ namespace FastImageClassifier
             }
         }
 
-        private void txtLeftArrowClass_TextChanged(object sender, EventArgs e)
+        private void txtLeftArrowLabel_TextChanged(object sender, EventArgs e)
         {
-            lbNegativeImages.Text = txtLeftArrowClass.Text.Trim().Replace(" ", "");
+            lbNegativeImages.Text = txtLeftArrowLabel.Text.Trim().Replace(" ", "");
             WriteConfig();
         }
 
-        private void txtRightArrowClass_TextChanged(object sender, EventArgs e)
+        private void txtRightArrowLabel_TextChanged(object sender, EventArgs e)
         {
-            lbPositiveImages.Text = txtRightArrowClass.Text.Trim().Replace(" ", "");
+            lbPositiveImages.Text = txtRightArrowLabel.Text.Trim().Replace(" ", "");
             WriteConfig();
         }
 
@@ -259,31 +317,36 @@ namespace FastImageClassifier
         {
             if (lvSource.Items.Count == 0)
             {
-                MessageBox.Show("No images to classify", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show("No images to label", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return true;
             }
             return false;
         }
 
-        private void PrepareClassification(
+        private void PrepareLabeling(
             out string sourceFilePath,
-            out string classfiedFolderPath,
+            out string labeledFolderPath,
             out string destinationFilePath,
             out string destinationFileName,
-            string className,
-            ListView? lvClassified)
+            string labelName,
+            ListView? lvLabeled)
         {
             destinationFileName = lvSource.SelectedItems[0].Text;
+            lvSource.Items.RemoveAt(0);
+
             sourceFilePath = Path.Combine(config.SourceFolder, destinationFileName);
-            var destinationFolderPath = classfiedFolderPath = GetClassifiedFolderPath(className);
+            var destinationFolderPath = labeledFolderPath = GetLabeledFolderPath(labelName);
             destinationFilePath = Path.Combine(destinationFolderPath, destinationFileName);
             lastDestinationFileName = destinationFileName;
             lastDestinationFilePath = destinationFilePath;
             lastDestinationFolderPath = destinationFolderPath;
-            lastLvClassified = lvClassified;
+            lastLvLabeled = lvLabeled;
+
+            remainingInBatchCount--;
+            remainingInFolderCount--;
         }
 
-        private bool Classify(Keys keyData)
+        private bool Label(Keys keyData)
         {
             try
             {
@@ -299,8 +362,8 @@ namespace FastImageClassifier
                 var destinationFilePath = string.Empty;
                 var destinationFileName = string.Empty;
                 var sourceFilePath = string.Empty;
-                var classfiedFolderPath = string.Empty;
-                ListView? lvClassified = null;
+                var labeledFolderPath = string.Empty;
+                ListView? lvLabeled = null;
                 switch (keyData)
                 {
                     case Keys.Left:
@@ -308,13 +371,13 @@ namespace FastImageClassifier
                         {
                             return true;
                         }
-                        lvClassified = lvLeftArrowKey;
-                        PrepareClassification(
+                        lvLabeled = lvLeftArrowKey;
+                        PrepareLabeling(
                             out sourceFilePath,
-                            out classfiedFolderPath,
+                            out labeledFolderPath,
                             out destinationFilePath,
                             out destinationFileName,
-                            config.LeftArrowClassName,
+                            config.LeftArrowLabelName,
                             lvLeftArrowKey);
                         break;
                     case Keys.Right:
@@ -322,13 +385,13 @@ namespace FastImageClassifier
                         {
                             return true;
                         }
-                        lvClassified = lvRightArrowKey;
-                        PrepareClassification(
+                        lvLabeled = lvRightArrowKey;
+                        PrepareLabeling(
                             out sourceFilePath,
-                            out classfiedFolderPath,
+                            out labeledFolderPath,
                             out destinationFilePath,
                             out destinationFileName,
-                            config.RightArrowClass,
+                            config.RightArrowLabelName,
                             lvRightArrowKey);
                         break;
                     case Keys.Up:/* Skip - Unknown */
@@ -337,9 +400,9 @@ namespace FastImageClassifier
                         {
                             return true;
                         }
-                        PrepareClassification(
+                        PrepareLabeling(
                             out sourceFilePath,
-                            out classfiedFolderPath,
+                            out labeledFolderPath,
                             out destinationFilePath,
                             out destinationFileName,
                             unknownFolder,
@@ -352,14 +415,21 @@ namespace FastImageClassifier
                             return true;
                         }
                         sourceFilePath = lastDestinationFilePath;
-                        lvClassified = lastLvClassified;
-                        classfiedFolderPath = lastDestinationFolderPath;
+                        lvLabeled = lastLvLabeled;
+                        labeledFolderPath = lastDestinationFolderPath;
                         destinationFilePath = Path.Combine(config.SourceFolder, lastDestinationFileName);
+
+                        remainingInBatchCount++;
+                        remainingInFolderCount++;
+                        
+                        var item = new ListViewItem(lastDestinationFileName);
+                        item.SubItems.Add(File.GetLastAccessTime(lastDestinationFilePath).ToString());
+                        lvSource.Items.Insert(0, item);
 
                         lastDestinationFileName = string.Empty;
                         lastDestinationFilePath = string.Empty;
                         lastDestinationFolderPath = string.Empty;
-                        lastLvClassified = null;
+                        lastLvLabeled = null;
                         break;
                     default:
                         return true;
@@ -367,9 +437,12 @@ namespace FastImageClassifier
 
                 picImage.Image?.Dispose();
                 picImage.Image = null;
+                picImage.Update();
+
                 File.Move(sourceFilePath, destinationFilePath);
-                LoadClassifiedFilesList(classfiedFolderPath, lvClassified);
-                LoadSourceFilesList();
+                
+                LoadLabeledFilesList(labeledFolderPath, lvLabeled);
+                LoadSourceFilesList(readFiles: false);
             }
             catch (Exception ex)
             {
@@ -378,22 +451,44 @@ namespace FastImageClassifier
             return true;
         }
 
+        private void txtLeftArrowLabel_Leave(object sender, EventArgs e)
+        {
+            lbNegativeImages.Text = txtLeftArrowLabel.Text.Trim().Replace(" ", "");
+            WriteConfig();
+            LoadLabeledFilesList(GetLabeledFolderPath(config.LeftArrowLabelName), lvLeftArrowKey);
+        }
+
+        private void txtRightArrowLabel_Leave(object sender, EventArgs e)
+        {
+            lbPositiveImages.Text = txtRightArrowLabel.Text.Trim().Replace(" ", "");
+            WriteConfig();
+            LoadLabeledFilesList(GetLabeledFolderPath(config.RightArrowLabelName), lvRightArrowKey);
+        }
+
         private bool KeyPressHandler(Keys keyData)
         {
-            if (isClassifying)
+            if (isLabeling)
             {
                 if (keyData == Keys.Escape)
                 {
                     Stop();
                     return true;
                 }
-                return Classify(keyData);
+                return Label(keyData);
             }
             else if (keyData == Keys.F5)
             {
+                if (txtLeftArrowLabel.Focused)
+                {
+                    txtLeftArrowLabel_Leave(new object(), new EventArgs());
+                }
+                else if (txtRightArrowLabel.Focused)
+                {
+                    txtRightArrowLabel_Leave(new object(), new EventArgs());
+                }
                 Start();
             }
-            return true;
+            return false;
         }
     }
 }
