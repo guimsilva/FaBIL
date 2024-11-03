@@ -1,4 +1,4 @@
-﻿namespace FastImageClassifier
+﻿namespace FastImageLabeler
 {
     partial class FrmMain
     {
@@ -39,8 +39,8 @@
             label1 = new Label();
             lblRightArrow = new Label();
             lblLeftArrow = new Label();
-            txtRightArrowClass = new TextBox();
-            txtLeftArrowClass = new TextBox();
+            txtRightArrowLabel = new TextBox();
+            txtLeftArrowLabel = new TextBox();
             foderDestination = new FolderBrowserDialog();
             picImage = new PictureBox();
             btnStart = new Button();
@@ -55,17 +55,17 @@
             pnlSourceStart = new Panel();
             lblRemainingInBatch = new Label();
             lblRemainingInFolder = new Label();
-            pnlClassified = new Panel();
-            pnlClassifiedRight = new Panel();
-            pnlClassifiedLeft = new Panel();
+            pnlLabeled = new Panel();
+            pnlLabeledRight = new Panel();
+            pnlLabeledLeft = new Panel();
             gpbSetup.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)picImage).BeginInit();
             gpbImage.SuspendLayout();
             tableLayoutPanel1.SuspendLayout();
             pnlSourceStart.SuspendLayout();
-            pnlClassified.SuspendLayout();
-            pnlClassifiedRight.SuspendLayout();
-            pnlClassifiedLeft.SuspendLayout();
+            pnlLabeled.SuspendLayout();
+            pnlLabeledRight.SuspendLayout();
+            pnlLabeledLeft.SuspendLayout();
             SuspendLayout();
             // 
             // gpbSetup
@@ -79,8 +79,8 @@
             gpbSetup.Controls.Add(label1);
             gpbSetup.Controls.Add(lblRightArrow);
             gpbSetup.Controls.Add(lblLeftArrow);
-            gpbSetup.Controls.Add(txtRightArrowClass);
-            gpbSetup.Controls.Add(txtLeftArrowClass);
+            gpbSetup.Controls.Add(txtRightArrowLabel);
+            gpbSetup.Controls.Add(txtLeftArrowLabel);
             gpbSetup.Location = new Point(13, 13);
             gpbSetup.Name = "gpbSetup";
             gpbSetup.Size = new Size(444, 401);
@@ -160,7 +160,7 @@
             lblRightArrow.Name = "lblRightArrow";
             lblRightArrow.Size = new Size(160, 15);
             lblRightArrow.TabIndex = 2;
-            lblRightArrow.Text = "\"Right arrow key\" class name";
+            lblRightArrow.Text = "\"Right arrow key\" label name";
             // 
             // lblLeftArrow
             // 
@@ -169,25 +169,25 @@
             lblLeftArrow.Name = "lblLeftArrow";
             lblLeftArrow.Size = new Size(152, 15);
             lblLeftArrow.TabIndex = 0;
-            lblLeftArrow.Text = "\"Left arrow key\" class name";
+            lblLeftArrow.Text = "\"Left arrow key\" label name";
             // 
-            // txtRightArrowClass
+            // txtRightArrowLabel
             // 
-            txtRightArrowClass.Location = new Point(179, 89);
-            txtRightArrowClass.Name = "txtRightArrowClass";
-            txtRightArrowClass.Size = new Size(254, 23);
-            txtRightArrowClass.TabIndex = 2;
-            txtRightArrowClass.Text = "Positive";
-            txtRightArrowClass.TextChanged += txtRightArrowClass_TextChanged;
+            txtRightArrowLabel.Location = new Point(179, 89);
+            txtRightArrowLabel.Name = "txtRightArrowLabel";
+            txtRightArrowLabel.Size = new Size(254, 23);
+            txtRightArrowLabel.TabIndex = 2;
+            txtRightArrowLabel.Text = "Positive";
+            txtRightArrowLabel.TextChanged += txtRightArrowLabel_TextChanged;
             // 
-            // txtLeftArrowClass
+            // txtLeftArrowLabel
             // 
-            txtLeftArrowClass.Location = new Point(179, 34);
-            txtLeftArrowClass.Name = "txtLeftArrowClass";
-            txtLeftArrowClass.Size = new Size(254, 23);
-            txtLeftArrowClass.TabIndex = 1;
-            txtLeftArrowClass.Text = "Negative";
-            txtLeftArrowClass.TextChanged += txtLeftArrowClass_TextChanged;
+            txtLeftArrowLabel.Location = new Point(179, 34);
+            txtLeftArrowLabel.Name = "txtLeftArrowLabel";
+            txtLeftArrowLabel.Size = new Size(254, 23);
+            txtLeftArrowLabel.TabIndex = 1;
+            txtLeftArrowLabel.Text = "Negative";
+            txtLeftArrowLabel.TextChanged += txtLeftArrowLabel_TextChanged;
             // 
             // picImage
             // 
@@ -299,7 +299,7 @@
             tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle());
             tableLayoutPanel1.Controls.Add(pnlSourceStart, 0, 1);
             tableLayoutPanel1.Controls.Add(gpbImage, 1, 0);
-            tableLayoutPanel1.Controls.Add(pnlClassified, 1, 1);
+            tableLayoutPanel1.Controls.Add(pnlLabeled, 1, 1);
             tableLayoutPanel1.Controls.Add(gpbSetup, 0, 0);
             tableLayoutPanel1.Dock = DockStyle.Fill;
             tableLayoutPanel1.Location = new Point(0, 0);
@@ -342,37 +342,37 @@
             lblRemainingInFolder.Text = "Remaining in folder: 0";
             lblRemainingInFolder.TextAlign = ContentAlignment.TopRight;
             // 
-            // pnlClassified
+            // pnlLabeled
             // 
-            pnlClassified.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            pnlClassified.AutoSizeMode = AutoSizeMode.GrowAndShrink;
-            pnlClassified.Controls.Add(pnlClassifiedRight);
-            pnlClassified.Controls.Add(pnlClassifiedLeft);
-            pnlClassified.Location = new Point(463, 420);
-            pnlClassified.Name = "pnlClassified";
-            pnlClassified.Padding = new Padding(2, 0, 0, 0);
-            pnlClassified.Size = new Size(640, 235);
-            pnlClassified.TabIndex = 1;
+            pnlLabeled.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            pnlLabeled.AutoSizeMode = AutoSizeMode.GrowAndShrink;
+            pnlLabeled.Controls.Add(pnlLabeledRight);
+            pnlLabeled.Controls.Add(pnlLabeledLeft);
+            pnlLabeled.Location = new Point(463, 420);
+            pnlLabeled.Name = "pnlLabeled";
+            pnlLabeled.Padding = new Padding(2, 0, 0, 0);
+            pnlLabeled.Size = new Size(640, 235);
+            pnlLabeled.TabIndex = 1;
             // 
-            // pnlClassifiedRight
+            // pnlLabeledRight
             // 
-            pnlClassifiedRight.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            pnlClassifiedRight.Controls.Add(lvRightArrowKey);
-            pnlClassifiedRight.Controls.Add(lbPositiveImages);
-            pnlClassifiedRight.Location = new Point(330, 0);
-            pnlClassifiedRight.Name = "pnlClassifiedRight";
-            pnlClassifiedRight.Size = new Size(310, 236);
-            pnlClassifiedRight.TabIndex = 1;
+            pnlLabeledRight.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+            pnlLabeledRight.Controls.Add(lvRightArrowKey);
+            pnlLabeledRight.Controls.Add(lbPositiveImages);
+            pnlLabeledRight.Location = new Point(330, 0);
+            pnlLabeledRight.Name = "pnlLabeledRight";
+            pnlLabeledRight.Size = new Size(310, 236);
+            pnlLabeledRight.TabIndex = 1;
             // 
-            // pnlClassifiedLeft
+            // pnlLabeleddLeft
             // 
-            pnlClassifiedLeft.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
-            pnlClassifiedLeft.Controls.Add(lvLeftArrowKey);
-            pnlClassifiedLeft.Controls.Add(lbNegativeImages);
-            pnlClassifiedLeft.Location = new Point(5, 0);
-            pnlClassifiedLeft.Name = "pnlClassifiedLeft";
-            pnlClassifiedLeft.Size = new Size(310, 236);
-            pnlClassifiedLeft.TabIndex = 0;
+            pnlLabeledLeft.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+            pnlLabeledLeft.Controls.Add(lvLeftArrowKey);
+            pnlLabeledLeft.Controls.Add(lbNegativeImages);
+            pnlLabeledLeft.Location = new Point(5, 0);
+            pnlLabeledLeft.Name = "pnlLabeleddLeft";
+            pnlLabeledLeft.Size = new Size(310, 236);
+            pnlLabeledLeft.TabIndex = 0;
             // 
             // FrmMain
             // 
@@ -383,7 +383,7 @@
             Icon = (Icon)resources.GetObject("$this.Icon");
             Name = "FrmMain";
             StartPosition = FormStartPosition.CenterScreen;
-            Text = "Fast Binary Image Classifier";
+            Text = "FaBIL - Fast Binary Image Labeler";
             gpbSetup.ResumeLayout(false);
             gpbSetup.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)picImage).EndInit();
@@ -392,11 +392,11 @@
             tableLayoutPanel1.PerformLayout();
             pnlSourceStart.ResumeLayout(false);
             pnlSourceStart.PerformLayout();
-            pnlClassified.ResumeLayout(false);
-            pnlClassifiedRight.ResumeLayout(false);
-            pnlClassifiedRight.PerformLayout();
-            pnlClassifiedLeft.ResumeLayout(false);
-            pnlClassifiedLeft.PerformLayout();
+            pnlLabeled.ResumeLayout(false);
+            pnlLabeledRight.ResumeLayout(false);
+            pnlLabeledRight.PerformLayout();
+            pnlLabeledLeft.ResumeLayout(false);
+            pnlLabeledLeft.PerformLayout();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -405,9 +405,9 @@
 
         private GroupBox gpbSetup;
         private Label lblLeftArrow;
-        private TextBox txtLeftArrowClass;
+        private TextBox txtLeftArrowLabel;
         private Label lblRightArrow;
-        private TextBox txtRightArrowClass;
+        private TextBox txtRightArrowLabel;
         private Label label1;
         private Label label2;
         private FolderBrowserDialog foderDestination;
@@ -427,9 +427,9 @@
         private Label lbStatus;
         private TableLayoutPanel tableLayoutPanel1;
         private Panel pnlSourceStart;
-        private Panel pnlClassified;
-        private Panel pnlClassifiedRight;
-        private Panel pnlClassifiedLeft;
+        private Panel pnlLabeled;
+        private Panel pnlLabeledRight;
+        private Panel pnlLabeledLeft;
         private Label lblRemainingInFolder;
         private Label lblRemainingInBatch;
     }

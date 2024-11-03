@@ -1,9 +1,9 @@
-﻿namespace FastImageClassifier
+﻿namespace FastImageLabeler
 {
     internal class Config
     {
         public string SourceFolder { get; set; } = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-        public string LeftArrowClassName { get; set; } = "Negative";
-        public string RightArrowClass { get; set; } = "Positive";
+        public string LeftArrowLabelName { get; set; } = "Negative";
+        public string RightArrowLabelName { get; set; } = "Positive";
     }
 }
