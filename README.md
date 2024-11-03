@@ -16,6 +16,10 @@ Using arrow keys to label images is faster and more intuitive than using a mouse
 
 ## How to Use
 
+You'll need Visual Studio 2022 or later with .NET desktop development module installed to build/run the project.
+
+Once you're running the application:
+
 1. Set the label names;
 2. Set the source folder. The destination folder will be created as a subfolder named `/Results`, where 3 other subfoders will be created: one for each label and one called `/Unknown`.
 3. Click on the `Start` button or press `F5` to start labeling images.
