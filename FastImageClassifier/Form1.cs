@@ -16,6 +16,8 @@ namespace FastImageClassifier
         private readonly List<string> imagesFileFilter = new List<string> { "*.jpg", "*.jpeg", "*.png", "*.gif" };
         private readonly string resultsFolder = "Results";
         private readonly string unknownFolder = "Unknown";
+        private readonly string remainingInBatch = "Remaining in batch: ";
+        private readonly string remainingInFolder = "Remaining in folder: ";
 
         private Config config { get; set; } = new Config();
         private bool canWriteConfig = false;
@@ -24,6 +26,8 @@ namespace FastImageClassifier
         private string lastDestinationFilePath = string.Empty;
         private string lastDestinationFileName = string.Empty;
         private ListView? lastLvClassified = null;
+        private int remainingInBatchCount = 0;
+        private int remainingInFolderCount = 0;
 
         protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
         {
@@ -84,7 +88,14 @@ namespace FastImageClassifier
             }
             else
             {
-                picImage.Image = Image.FromFile(imagePath);
+                using (FileStream fileStream = new FileStream(imagePath, FileMode.Open, FileAccess.Read))
+                {
+                    using (Image image = Image.FromStream(fileStream))
+                    {
+                        picImage.Image = new Bitmap(image);
+                    }
+                }
+                lvSource.SelectedItems.Clear();
                 lvSource.Items[0].Selected = true;
             }
         }
@@ -103,18 +114,38 @@ namespace FastImageClassifier
             File.WriteAllText(configPath, JsonSerializer.Serialize(config));
         }
 
-        private void LoadSourceFilesList(bool loadImage = true)
+        private void LoadSourceFilesList(bool loadImage = true, bool readFiles = true)
         {
-            lvSource.Items.Clear();
-            var files = this.imagesFileFilter.SelectMany(f => Directory.GetFiles(config.SourceFolder, f))
-                                             .Select(f => new FileInfo(f));
-
-            foreach (var file in files)
+            if (readFiles || lvSource.Items.Count == 0)
             {
-                var item = new ListViewItem(file.Name);
-                item.SubItems.Add(file.LastAccessTime.ToString());
-                lvSource.Items.Add(item);
+                lvSource.Items.Clear();
+                remainingInFolderCount = this.imagesFileFilter.SelectMany(f => Directory.EnumerateFiles(config.SourceFolder, f, new EnumerationOptions()
+                {
+                    RecurseSubdirectories = false,
+                }))
+                    .Count();
+
+                var files = this.imagesFileFilter.SelectMany(f => Directory.EnumerateFiles(config.SourceFolder, f, new EnumerationOptions()
+                {
+                    RecurseSubdirectories = false,
+                })
+                    .OrderBy(f => new FileInfo(f).Name)
+                    .Take(100))
+                    .Select(f => new FileInfo(f));
+
+                remainingInBatchCount = files.Count();
+
+                /* Add to view list only the first 100 files to make it lighter and faster */
+                foreach (var file in files)
+                {
+                    var item = new ListViewItem(file.Name);
+                    item.SubItems.Add(file.LastAccessTime.ToString());
+                    lvSource.Items.Add(item);
+                }
             }
+
+            lblRemainingInBatch.Text = $"{remainingInBatch}{remainingInBatchCount}";
+            lblRemainingInFolder.Text = $"{remainingInFolder}{remainingInFolderCount}";
 
             if (lvSource.Items.Count > 0)
             {
@@ -176,12 +207,22 @@ namespace FastImageClassifier
                     txtPathSource.Text = folderBrowserDialog.SelectedPath;
                     WriteConfig();
                     LoadSourceFilesList();
+                    if (isSourceEmpty())
+                    {
+                        return;
+                    }
+                    else
+                    {
+                        lvLeftArrowKey.Items.Clear();
+                        lvRightArrowKey.Items.Clear();
+                    }
                 }
             }
         }
 
         private void Start()
         {
+            LoadSourceFilesList();
             if (lvSource.Items.Count == 0)
             {
                 MessageBox.Show("No images to classify", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -273,6 +314,8 @@ namespace FastImageClassifier
             ListView? lvClassified)
         {
             destinationFileName = lvSource.SelectedItems[0].Text;
+            lvSource.Items.RemoveAt(0);
+
             sourceFilePath = Path.Combine(config.SourceFolder, destinationFileName);
             var destinationFolderPath = classfiedFolderPath = GetClassifiedFolderPath(className);
             destinationFilePath = Path.Combine(destinationFolderPath, destinationFileName);
@@ -280,6 +323,9 @@ namespace FastImageClassifier
             lastDestinationFilePath = destinationFilePath;
             lastDestinationFolderPath = destinationFolderPath;
             lastLvClassified = lvClassified;
+
+            remainingInBatchCount--;
+            remainingInFolderCount--;
         }
 
         private bool Classify(Keys keyData)
@@ -355,6 +401,13 @@ namespace FastImageClassifier
                         classfiedFolderPath = lastDestinationFolderPath;
                         destinationFilePath = Path.Combine(config.SourceFolder, lastDestinationFileName);
 
+                        remainingInBatchCount++;
+                        remainingInFolderCount++;
+                        
+                        var item = new ListViewItem(lastDestinationFileName);
+                        item.SubItems.Add(File.GetLastAccessTime(lastDestinationFilePath).ToString());
+                        lvSource.Items.Insert(0, item);
+
                         lastDestinationFileName = string.Empty;
                         lastDestinationFilePath = string.Empty;
                         lastDestinationFolderPath = string.Empty;
@@ -366,9 +419,12 @@ namespace FastImageClassifier
 
                 picImage.Image?.Dispose();
                 picImage.Image = null;
+                picImage.Update();
+
                 File.Move(sourceFilePath, destinationFilePath);
+                
                 LoadClassifiedFilesList(classfiedFolderPath, lvClassified);
-                LoadSourceFilesList();
+                LoadSourceFilesList(readFiles: false);
             }
             catch (Exception ex)
             {
@@ -392,7 +448,7 @@ namespace FastImageClassifier
             {
                 Start();
             }
-            return true;
+            return false;
         }
     }
 }

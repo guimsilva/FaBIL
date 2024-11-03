@@ -53,6 +53,8 @@
             gpbImage = new GroupBox();
             tableLayoutPanel1 = new TableLayoutPanel();
             pnlSourceStart = new Panel();
+            lblRemainingInBatch = new Label();
+            lblRemainingInFolder = new Label();
             pnlClassified = new Panel();
             pnlClassifiedRight = new Panel();
             pnlClassifiedLeft = new Panel();
@@ -214,6 +216,7 @@
             lvSource.Font = new Font("Segoe UI", 8F);
             lvSource.Location = new Point(0, 24);
             lvSource.Name = "lvSource";
+            lvSource.Scrollable = false;
             lvSource.Size = new Size(444, 141);
             lvSource.TabIndex = 3;
             lvSource.UseCompatibleStateImageBehavior = false;
@@ -225,6 +228,7 @@
             lvLeftArrowKey.ForeColor = Color.MediumOrchid;
             lvLeftArrowKey.Location = new Point(0, 24);
             lvLeftArrowKey.Name = "lvLeftArrowKey";
+            lvLeftArrowKey.Scrollable = false;
             lvLeftArrowKey.Size = new Size(310, 210);
             lvLeftArrowKey.TabIndex = 4;
             lvLeftArrowKey.UseCompatibleStateImageBehavior = false;
@@ -236,6 +240,7 @@
             lvRightArrowKey.ForeColor = Color.SlateBlue;
             lvRightArrowKey.Location = new Point(0, 24);
             lvRightArrowKey.Name = "lvRightArrowKey";
+            lvRightArrowKey.Scrollable = false;
             lvRightArrowKey.Size = new Size(310, 210);
             lvRightArrowKey.TabIndex = 5;
             lvRightArrowKey.UseCompatibleStateImageBehavior = false;
@@ -308,6 +313,8 @@
             // 
             // pnlSourceStart
             // 
+            pnlSourceStart.Controls.Add(lblRemainingInBatch);
+            pnlSourceStart.Controls.Add(lblRemainingInFolder);
             pnlSourceStart.Controls.Add(lvSource);
             pnlSourceStart.Controls.Add(btnStart);
             pnlSourceStart.Controls.Add(lbSourceList);
@@ -316,6 +323,24 @@
             pnlSourceStart.Name = "pnlSourceStart";
             pnlSourceStart.Size = new Size(444, 235);
             pnlSourceStart.TabIndex = 0;
+            // 
+            // lblRemainingInBatch
+            // 
+            lblRemainingInBatch.AutoSize = true;
+            lblRemainingInBatch.Location = new Point(112, 6);
+            lblRemainingInBatch.Name = "lblRemainingInBatch";
+            lblRemainingInBatch.Size = new Size(122, 15);
+            lblRemainingInBatch.TabIndex = 8;
+            lblRemainingInBatch.Text = "Remaining in batch: 0";
+            // 
+            // lblRemainingInFolder
+            // 
+            lblRemainingInFolder.Location = new Point(293, 6);
+            lblRemainingInFolder.Name = "lblRemainingInFolder";
+            lblRemainingInFolder.Size = new Size(148, 15);
+            lblRemainingInFolder.TabIndex = 7;
+            lblRemainingInFolder.Text = "Remaining in folder: 0";
+            lblRemainingInFolder.TextAlign = ContentAlignment.TopRight;
             // 
             // pnlClassified
             // 
@@ -404,5 +429,7 @@
         private Panel pnlClassified;
         private Panel pnlClassifiedRight;
         private Panel pnlClassifiedLeft;
+        private Label lblRemainingInFolder;
+        private Label lblRemainingInBatch;
     }
 }
