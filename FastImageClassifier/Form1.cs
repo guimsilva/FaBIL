@@ -38,6 +38,16 @@ namespace FastImageClassifier
             return base.ProcessCmdKey(ref msg, keyData);
         }
 
+        protected string LeftClassifiedLabel =>
+            lvLeftArrowKey.Items.Count > 0
+                ? $"{config.LeftArrowClassName} ({lvLeftArrowKey.Items.Count})"
+                : config.LeftArrowClassName;
+
+        protected string RightClassifiedLabel =>
+            lvRightArrowKey.Items.Count > 0
+                ? $"{config.RightArrowClass} ({lvRightArrowKey.Items.Count})"
+                : config.RightArrowClass;
+
         private void FrmMain_Load(object? sender, EventArgs e)
         {
             if (File.Exists(configPath))
@@ -167,19 +177,33 @@ namespace FastImageClassifier
             }
         }
 
+        private void SetLbImagesTexts()
+        {
+            lbNegativeImages.Text = LeftClassifiedLabel;
+            lbPositiveImages.Text = RightClassifiedLabel;
+        }
+
         private void LoadClassifiedFilesList(string folderPath, ListView? lv)
         {
-            if (lv is null || !Directory.Exists(folderPath))
+            if (lv is null)
             {
                 return;
             }
 
             lv.Items.Clear();
+
+            if (!Directory.Exists(folderPath))
+            {
+                SetLbImagesTexts();
+                return;
+            }
+
             var files = this.imagesFileFilter.SelectMany(f => Directory.GetFiles(folderPath, f))
                                              .Select(f => new FileInfo(f));
 
             if (files is null || files.Count() == 0)
             {
+                SetLbImagesTexts();
                 return;
             }
 
@@ -195,6 +219,7 @@ namespace FastImageClassifier
             lv.Sorting = SortOrder.Descending;
             lv.Sort();
             lv.Items[0].Selected = true;
+            SetLbImagesTexts();
         }
 
         private void btnFolderSource_Click(object? sender, EventArgs e)
@@ -206,16 +231,10 @@ namespace FastImageClassifier
                 {
                     txtPathSource.Text = folderBrowserDialog.SelectedPath;
                     WriteConfig();
-                    LoadSourceFilesList();
-                    if (isSourceEmpty())
-                    {
-                        return;
-                    }
-                    else
-                    {
-                        lvLeftArrowKey.Items.Clear();
-                        lvRightArrowKey.Items.Clear();
-                    }
+                    LoadSourceFilesList(loadImage: false);
+                    LoadClassifiedFilesList(GetClassifiedFolderPath(config.LeftArrowClassName), lvLeftArrowKey);
+                    LoadClassifiedFilesList(GetClassifiedFolderPath(config.RightArrowClass), lvRightArrowKey);
+                    isSourceEmpty();
                 }
             }
         }
