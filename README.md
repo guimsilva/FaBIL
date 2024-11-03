@@ -1,4 +1,4 @@
-# Fast Binary Image Labeler
+# FaBIL - Fast Binary Image Labeler
 
 Fast Binary Image Labeler is a free .NET 8 application designed to provide simple and fast binary image labeling.
 
@@ -32,4 +32,4 @@ This project is licensed under the MIT License. See the LICENSE file for details
 
 ## Contact
 
-For any questions or suggestions, please open an issue or contact the repository owner.
+For any questions or suggestions, please open an issue or make a PR.
