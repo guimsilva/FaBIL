@@ -126,54 +126,63 @@ namespace FastImageLabeler
 
         private void LoadSourceFilesList(bool loadImage = true, bool readFiles = true)
         {
-            if (readFiles || lvSource.Items.Count == 0)
+            try
             {
-                lvSource.Items.Clear();
-                remainingInFolderCount = this.imagesFileFilter.SelectMany(f => Directory.EnumerateFiles(config.SourceFolder, f, new EnumerationOptions()
+                if (readFiles || lvSource.Items.Count == 0)
                 {
-                    RecurseSubdirectories = false,
-                }))
-                    .Count();
+                    lvSource.Items.Clear();
+                    remainingInFolderCount = this.imagesFileFilter.SelectMany(f => Directory.EnumerateFiles(config.SourceFolder, f, new EnumerationOptions()
+                    {
+                        RecurseSubdirectories = false,
+                    }))
+                        .Count();
 
-                var files = this.imagesFileFilter.SelectMany(f => Directory.EnumerateFiles(config.SourceFolder, f, new EnumerationOptions()
+                    var files = this.imagesFileFilter.SelectMany(f => Directory.EnumerateFiles(config.SourceFolder, f, new EnumerationOptions()
+                    {
+                        RecurseSubdirectories = false,
+                    })
+                        .OrderBy(f => new FileInfo(f).Name)
+                        .Take(100))
+                        .Select(f => new FileInfo(f));
+
+                    remainingInBatchCount = files.Count();
+
+                    /* Add to view list only the first 100 files to make it lighter and faster */
+                    foreach (var file in files)
+                    {
+                        var item = new ListViewItem(file.Name);
+                        item.SubItems.Add(file.LastAccessTime.ToString());
+                        lvSource.Items.Add(item);
+                    }
+                }
+
+                lblRemainingInBatch.Text = $"{remainingInBatch}{remainingInBatchCount}";
+                lblRemainingInFolder.Text = $"{remainingInFolder}{remainingInFolderCount}";
+
+                if (lvSource.Items.Count > 0)
                 {
-                    RecurseSubdirectories = false,
-                })
-                    .OrderBy(f => new FileInfo(f).Name)
-                    .Take(100))
-                    .Select(f => new FileInfo(f));
-
-                remainingInBatchCount = files.Count();
-
-                /* Add to view list only the first 100 files to make it lighter and faster */
-                foreach (var file in files)
+                    lbStatus.Visible = true;
+                    btnStart.Enabled = true;
+                    if (loadImage)
+                    {
+                        LoadImage();
+                    }
+                }
+                else
                 {
-                    var item = new ListViewItem(file.Name);
-                    item.SubItems.Add(file.LastAccessTime.ToString());
-                    lvSource.Items.Add(item);
+                    lbStatus.Visible = false;
+                    btnStart.Enabled = false;
+                    if (isLabeling)
+                    {
+                        Stop();
+                    }
                 }
             }
-
-            lblRemainingInBatch.Text = $"{remainingInBatch}{remainingInBatchCount}";
-            lblRemainingInFolder.Text = $"{remainingInFolder}{remainingInFolderCount}";
-
-            if (lvSource.Items.Count > 0)
+            catch (DirectoryNotFoundException ex)
             {
-                lbStatus.Visible = true;
-                btnStart.Enabled = true;
-                if (loadImage)
-                {
-                    LoadImage();
-                }
-            }
-            else
-            {
-                lbStatus.Visible = false;
-                btnStart.Enabled = false;
-                if (isLabeling)
-                {
-                    Stop();
-                }
+                txtPathSource.Text = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+                WriteConfig();
+                MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
